@@ -7,7 +7,7 @@
  * @author 老王的手下
  */
 
-// 配色方案，别TM乱改这些颜色值
+// 配色方案（修改前请确认设计规范）
 var COLOR_SCHEMES = {
     business: { title: 0x2F5496, body: 0x333333 },
     tech: { title: 0x00B0F0, body: 0x404040 },

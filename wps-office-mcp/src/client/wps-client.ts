@@ -34,8 +34,8 @@ const IS_MAC = os.platform() === 'darwin';
 // PowerShell脚本路径 (Windows)
 const PS_SCRIPT_PATH = path.join(__dirname, '../../scripts/wps-com.ps1');
 
-// Mac轮询服务器端口
-const MAC_POLL_PORT = 58891;
+// Mac轮询服务器端口（支持环境变量 WPS_MCP_PORT 配置）
+const MAC_POLL_PORT = parseInt(process.env.WPS_MCP_PORT || '58891', 10);
 
 /**
  * 执行Mac轮询调用
@@ -60,11 +60,15 @@ async function execMacPoll(action: string, params: Record<string, unknown> = {})
   }
 }
 
+// PowerShell 默认超时（毫秒）
+const PS_TIMEOUT = 30000;
+
 /**
  * 执行PowerShell命令 (Windows)
  */
 async function execPowerShell(action: string, params: Record<string, unknown> = {}): Promise<unknown> {
   return new Promise((resolve, reject) => {
+    // JSON参数通过spawn args数组传递，Node自动处理Windows引号转义
     const paramsJson = JSON.stringify(params);
     const args = [
       '-ExecutionPolicy', 'Bypass',
@@ -82,6 +86,14 @@ async function execPowerShell(action: string, params: Record<string, unknown> = 
 
     let stdout = '';
     let stderr = '';
+    let killed = false;
+
+    // 超时保护：防止PowerShell进程挂起
+    const timeoutHandle = setTimeout(() => {
+      killed = true;
+      ps.kill('SIGTERM');
+      reject(new Error(`PowerShell 执行超时（${PS_TIMEOUT}ms）: ${action}`));
+    }, PS_TIMEOUT);
 
     ps.stdout.on('data', (data) => {
       stdout += data.toString();
@@ -92,23 +104,30 @@ async function execPowerShell(action: string, params: Record<string, unknown> = 
     });
 
     ps.on('close', (code) => {
-      if (code !== 0 && stderr) {
-        log.error('PowerShell error', { stderr, code });
-        reject(new Error(stderr));
+      clearTimeout(timeoutHandle);
+      if (killed) return; // 已超时处理，忽略后续事件
+
+      if (code !== 0) {
+        const errMsg = stderr || `PowerShell 非零退出码: ${code}`;
+        log.error('PowerShell error', { stderr, code, action });
+        reject(new Error(errMsg));
         return;
       }
 
       try {
         const result = JSON.parse(stdout.trim());
         resolve(result);
-      } catch (e) {
-        log.error('Failed to parse PowerShell output', { stdout });
-        reject(new Error(`Invalid JSON output: ${stdout}`));
+      } catch (_e) {
+        log.error('Failed to parse PowerShell output', { stdout, action });
+        reject(new Error(`PowerShell 输出解析失败（非有效JSON）: ${stdout.substring(0, 200)}`));
       }
     });
 
     ps.on('error', (err) => {
-      reject(err);
+      clearTimeout(timeoutHandle);
+      if (killed) return;
+      log.error('PowerShell spawn error', { error: err.message, action });
+      reject(new Error(`无法启动 PowerShell 进程: ${err.message}`));
     });
   });
 }
@@ -162,7 +181,7 @@ export class WpsClient {
       const duration = Date.now() - startTime;
       logResponse(action, false, duration);
       this.status.connected = false;
-      throw errorUtils.wrap(error, `WPS COM call failed: ${action}`);
+      throw errorUtils.wrap(error, `WPS 调用失败（${IS_MAC ? 'macOS轮询' : 'PowerShell COM'}）: ${action}`);
     }
   }
 
@@ -171,12 +190,23 @@ export class WpsClient {
    */
   async callApi<T = unknown>(request: WpsApiRequest): Promise<WpsApiResponse<T>> {
     const actionMap: Record<string, string> = {
+      // Excel 旧API
       'workbook.getActive': 'getActiveWorkbook',
       'cell.getValue': 'getCellValue',
       'cell.setValue': 'setCellValue',
       'range.getData': 'getRangeData',
       'range.setData': 'setRangeData',
+      // Word 旧API
+      'document.getActive': 'getActiveDocument',
+      'document.getText': 'getDocumentText',
+      'document.insertText': 'insertText',
+      // PPT 旧API
+      'presentation.getActive': 'getActivePresentation',
+      'presentation.addSlide': 'addSlide',
+      // 通用旧API
       'file.save': 'save',
+      'file.saveAs': 'saveAs',
+      'file.open': 'openFile',
       'ping': 'ping',
     };
     const action = actionMap[request.method] || request.method;

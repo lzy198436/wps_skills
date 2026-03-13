@@ -82,11 +82,10 @@ description: WPS Office 跨应用智能助手，统一管理 Excel、Word、PPT 
 
 ### Step 2: 状态检查
 
-调用 `wps_office_check_status` 检查应用状态：
-- WPS 文字是否运行
-- WPS 表格是否运行
-- WPS 演示是否运行
-- 当前活动的应用和文档
+调用 `wps_check_connection` 检查 WPS 连接状态，然后按需调用：
+- `wps_get_active_document` 获取当前文字文档信息
+- `wps_get_active_workbook` 获取当前表格工作簿信息
+- `wps_get_active_presentation` 获取当前演示文稿信息
 
 ### Step 3: 执行操作
 
@@ -147,48 +146,84 @@ description: WPS Office 跨应用智能助手，统一管理 Excel、Word、PPT 
 
 ### 文件操作
 
+文件操作按应用类型使用对应的专项工具：
+
 | 操作 | 工具 | 说明 |
 |-----|------|-----|
-| 新建文档 | `wps_office_new_document` | 创建新的空白文档 |
-| 打开文件 | `wps_office_open_file` | 打开指定路径的文件 |
-| 保存文档 | `wps_office_save_document` | 保存当前文档 |
-| 另存为 | `wps_office_save_as` | 另存为指定格式/位置 |
-| 关闭文档 | `wps_office_close_document` | 关闭当前文档 |
+| 打开Word文档 | `wps_word_open_document` | 打开指定路径的Word文档 |
+| 新建PPT | `wps_ppt_create_presentation` | 创建新的空白演示文稿 |
+| 打开PPT | `wps_ppt_open_presentation` | 打开指定路径的PPT文件 |
+| 关闭PPT | `wps_ppt_close_presentation` | 关闭演示文稿（可选是否保存） |
 
-### 导出操作
+> 注意：保存、另存为等操作可通过 `wps_execute_method` 调用自定义API实现。
 
-| 格式 | 工具 | 适用应用 |
+### 导出与转换操作
+
+| 操作 | 工具 | 适用应用 |
 |-----|------|---------|
-| PDF | `wps_office_export_pdf` | 全部 |
-| 图片 | `wps_office_export_image` | Word/PPT |
-| HTML | `wps_office_export_html` | Word |
-
-### 打印操作
+| 转换为PDF | `wps_convert_to_pdf` | Word/Excel/PPT |
+| 格式互转 | `wps_convert_format` | Word/Excel/PPT |
 
 ```
-wps_office_print
-  - copies: 打印份数
-  - pages: 页面范围（如 "1-5" 或 "all"）
-  - printer: 打印机名称（可选）
+wps_convert_to_pdf
+  - outputPath: PDF输出路径（可选，不指定则使用原文件名.pdf）
+  - openAfterExport: 导出后是否自动打开PDF（默认false）
+
+wps_convert_format
+  - targetFormat: 目标格式扩展名（如 doc, xlsx, ppt, rtf, csv, html 等）（必填）
+  - outputPath: 输出路径（可选，不指定则使用原文件名改为新扩展名）
 ```
 
-## 应用切换与协调
+**支持的转换格式**：
+- Word: doc, docx, rtf, txt, html, xml
+- Excel: xls, xlsx, xlsm, xlsb, csv, html
+- PPT: ppt, pptx, pptm, html, png, jpg, gif, bmp
 
-### 激活应用
+## 应用状态查询
 
-```
-wps_office_activate_app
-  - app: "word" | "excel" | "ppt"
-```
-
-### 获取当前状态
+### 检查连接
 
 ```
-wps_office_get_status
-返回：
-  - activeApp: 当前活动应用
-  - activeDocument: 当前活动文档
-  - runningApps: 正在运行的应用列表
+wps_check_connection
+  返回：WPS Office 各应用的连接状态
+```
+
+### 获取各应用当前状态
+
+```
+wps_get_active_document    → 获取当前WPS文字文档信息
+wps_get_active_workbook    → 获取当前WPS表格工作簿信息
+wps_get_active_presentation → 获取当前WPS演示文稿信息
+```
+
+### 自定义API调用
+
+```
+wps_execute_method
+  - method: API方法名
+  - appType: 应用类型 "wps"(文字) | "et"(表格) | "wpp"(演示)
+  - params: 方法参数（对象）
+```
+
+> 适用场景：当内置工具不能满足需求时，可通过此工具调用WPS底层API。
+
+## 跨应用数据传递
+
+使用缓存工具实现跨应用数据中转：
+
+```
+wps_cache_data        → 缓存数据到MCP Server（如从Excel读取后缓存）
+  - key: 缓存键名
+  - data: 要缓存的数据（JSON对象）
+  - appType: 数据来源应用类型 "et" | "wps" | "wpp"
+
+wps_get_cached_data   → 获取缓存的数据（如在PPT中使用Excel数据）
+  - key: 缓存键名
+
+wps_list_cache        → 列出所有缓存键名
+
+wps_clear_cache       → 清除缓存数据
+  - key: 要清除的缓存键名（不指定则清除所有）
 ```
 
 ## 智能路由逻辑
@@ -267,19 +302,34 @@ ELSE:
 
 ## 可用工具列表
 
-### 通用工具
+### 通用基础工具
 
 | 工具名称 | 功能描述 |
 |---------|---------|
-| `wps_office_check_status` | 检查 WPS 应用状态 |
-| `wps_office_activate_app` | 激活指定应用 |
-| `wps_office_new_document` | 新建文档 |
-| `wps_office_open_file` | 打开文件 |
-| `wps_office_save_document` | 保存文档 |
-| `wps_office_save_as` | 另存为 |
-| `wps_office_close_document` | 关闭文档 |
-| `wps_office_export_pdf` | 导出 PDF |
-| `wps_office_print` | 打印文档 |
+| `wps_check_connection` | 检查 WPS Office 连接状态 |
+| `wps_get_active_document` | 获取当前WPS文字文档信息 |
+| `wps_get_active_workbook` | 获取当前WPS表格工作簿信息 |
+| `wps_get_active_presentation` | 获取当前WPS演示文稿信息 |
+| `wps_execute_method` | 执行自定义WPS API方法 |
+| `wps_insert_text` | 在当前文档中插入文本 |
+| `wps_get_cell_value` | 读取指定单元格的值 |
+| `wps_set_cell_value` | 设置指定单元格的值 |
+
+### 跨应用数据缓存
+
+| 工具名称 | 功能描述 |
+|---------|---------|
+| `wps_cache_data` | 缓存数据到MCP Server，用于跨应用数据传递 |
+| `wps_get_cached_data` | 从MCP Server获取缓存的数据 |
+| `wps_list_cache` | 列出所有缓存的数据键名 |
+| `wps_clear_cache` | 清除缓存数据 |
+
+### 格式转换工具
+
+| 工具名称 | 功能描述 |
+|---------|---------|
+| `wps_convert_to_pdf` | 将当前文档转换为PDF格式（支持Word/Excel/PPT） |
+| `wps_convert_format` | 将当前文档转换为其他格式（doc/xlsx/ppt/rtf/csv/html等） |
 
 ### 专项工具（路由到对应 Skill）
 
@@ -299,3 +349,5 @@ ELSE:
 ---
 
 *Skill by lc2panda - WPS MCP Project*
+
+<!-- 审计记录：2026-03-14 Agent-WpsOfficeSkill T09完成 -->

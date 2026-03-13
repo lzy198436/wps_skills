@@ -1394,6 +1394,7 @@ function handleCreatePresentation(params) {
 // 打开演示文稿
 function handleOpenPresentation(params) {
     try {
+        if (!params.path) return { success: false, error: '请提供演示文稿路径' };
         var ppt = Application.Presentations.Open(params.path);
         return { success: true, data: { name: ppt.Name, path: ppt.FullName, slideCount: ppt.Slides.Count } };
     } catch (e) {
@@ -5171,6 +5172,7 @@ function handleProtectWorkbook(params) {
 // 打开工作簿
 function handleOpenWorkbook(params) {
     try {
+        if (!params.path) return { success: false, error: '请提供工作簿路径' };
         var wb = Application.Workbooks.Open(params.path, params.updateLinks, params.readOnly);
         return { success: true, data: { name: wb.Name, path: wb.FullName, sheets: wb.Sheets.Count } };
     } catch (e) {
