@@ -1,4 +1,7 @@
 /**
+ * Input: Tool Registry 与工具定义
+ * Output: Tool 注册与调用断言
+ * Pos: Tool 注册单元测试。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
  * Tools定义和注册测试 - 陈十三出品
  *
  * 艹，这个测试模块是用来测试tool-registry.ts和tools类型的

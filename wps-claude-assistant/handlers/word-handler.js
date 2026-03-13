@@ -1,4 +1,7 @@
 /**
+ * Input: Word 操作参数
+ * Output: Word 操作结果
+ * Pos: macOS 加载项 Word 处理器。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
  * Word操作处理器 - Mac版WPS加载项
  * 使用WPS JavaScript API实现Word文档操作
  * @author 老李（参考老王的PowerShell实现）

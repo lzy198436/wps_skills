@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Input: 加载项清单配置 -->
+<!-- Output: WPS 加载项注册元数据 -->
+<!-- Pos: macOS 加载项清单入口。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。 -->
 <manifest xmlns="http://schemas.wps.cn/oaassist/2019/manifest">
     <id>claude-assistant</id>
     <version>1.0.0</version>

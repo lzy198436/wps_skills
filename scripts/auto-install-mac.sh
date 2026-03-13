@@ -1,4 +1,7 @@
 #!/bin/bash
+# Input: 用户环境与WPS/Node安装状态
+# Output: 安装与配置步骤的执行结果
+# Pos: macOS 一键安装脚本。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
 # WPS Skills Mac 一键安装脚本 (反向轮询架构版)
 # @author 老王
 # @date 2026-01-27

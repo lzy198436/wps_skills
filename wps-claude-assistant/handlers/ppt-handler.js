@@ -1,4 +1,7 @@
 /**
+ * Input: PPT 操作参数
+ * Output: PPT 操作结果
+ * Pos: macOS 加载项 PPT 处理器。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
  * PPT操作处理器 - Mac版
  * 使用WPS JavaScript API实现PPT操作
  * @author 老王的手下

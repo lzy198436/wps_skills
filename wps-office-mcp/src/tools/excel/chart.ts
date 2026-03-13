@@ -2,14 +2,13 @@
  * Input: 图表工具参数
  * Output: 图表创建/更新结果
  * Pos: Excel 图表工具实现。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
- * Excel图表相关Tools - 刘大炮的可视化神器
- * 老王让我来搞这个图表模块，别tm给我乱传参数
+ * Excel图表相关Tools - 数据可视化模块
+ * 负责图表的创建和属性更新操作
  *
  * 包含：
  * - wps_excel_create_chart: 创建图表（柱状图、折线图、饼图、散点图等）
  * - wps_excel_update_chart: 更新图表属性（标题、颜色、图例等）
  *
- * @author 刘大炮
  * @date 2026-01-24
  */
 
@@ -26,7 +25,7 @@ import { WpsAppType } from '../../types/wps';
 
 /**
  * 支持的图表类型枚举
- * 这些是WPS Excel支持的主流图表类型，别给我瞎编类型
+ * WPS Excel支持的主流图表类型
  */
 export enum ChartType {
   /** 簇状柱形图 - 最常用的，比较数值大小 */
@@ -70,7 +69,7 @@ const CHART_TYPE_MAP: Record<ChartType, number> = {
 
 /**
  * 创建图表工具
- * 这是核心功能，根据数据范围创建各种类型的图表
+ * 根据数据范围创建各种类型的图表
  */
 export const createChartDefinition: ToolDefinition = {
   name: 'wps_excel_create_chart',
@@ -99,7 +98,7 @@ export const createChartDefinition: ToolDefinition = {
     properties: {
       data_range: {
         type: 'string',
-        description: '数据范围，如 A1:C10。这是图表数据的来源，别给我传空的',
+        description: '数据范围，如 A1:C10，图表数据的来源',
       },
       chart_type: {
         type: 'string',
@@ -181,7 +180,7 @@ export const createChartHandler: ToolHandler = async (
     show_data_labels?: boolean;
   };
 
-  // 校验数据范围格式，老王的规矩：参数必须严格校验
+  // 校验数据范围格式
   if (!data_range || !/^[A-Z]+[0-9]+(:[A-Z]+[0-9]+)?$/i.test(data_range)) {
     return {
       id: uuidv4(),
@@ -189,7 +188,7 @@ export const createChartHandler: ToolHandler = async (
       content: [
         {
           type: 'text',
-          text: `艹，数据范围格式不对！应该是类似 A1:C10 这样的格式，你给我传的是: ${data_range}`,
+          text: `数据范围格式无效，应为类似 A1:C10 的格式，当前传入: ${data_range}`,
         },
       ],
       error: '数据范围格式无效',
@@ -280,7 +279,7 @@ export const createChartHandler: ToolHandler = async (
     return {
       id: uuidv4(),
       success: false,
-      content: [{ type: 'text', text: `创建图表出错，艹: ${errMsg}` }],
+      content: [{ type: 'text', text: `创建图表出错: ${errMsg}` }],
       error: errMsg,
     };
   }
@@ -288,7 +287,7 @@ export const createChartHandler: ToolHandler = async (
 
 /**
  * 更新图表属性工具
- * 改标题、改颜色、改图例什么的都靠这个
+ * 支持修改标题、颜色、图例、数据标签等属性
  */
 export const updateChartDefinition: ToolDefinition = {
   name: 'wps_excel_update_chart',
@@ -390,7 +389,7 @@ export const updateChartHandler: ToolHandler = async (
       content: [
         {
           type: 'text',
-          text: '憨批，你得告诉我要更新哪个图表！chart_index或chart_name至少填一个',
+          text: '请指定目标图表，chart_index 或 chart_name 至少填写一个',
         },
       ],
       error: '未指定目标图表',
@@ -501,7 +500,6 @@ export const updateChartHandler: ToolHandler = async (
 
 /**
  * 导出所有图表相关的Tools
- * 刘大炮出品，质量保证
  */
 export const chartTools: RegisteredTool[] = [
   { definition: createChartDefinition, handler: createChartHandler },

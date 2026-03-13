@@ -1,4 +1,7 @@
 /**
+ * Input: MCP Server 指令与加载项事件
+ * Output: WPS 应用侧执行结果
+ * Pos: macOS WPS 加载项主入口。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
  * Claude助手 - Mac版（轮询模式）
  * 加载项作为HTTP客户端，轮询MCP Server获取命令
  *

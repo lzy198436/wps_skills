@@ -2,7 +2,7 @@
  * Input: Word 格式化参数
  * Output: 样式与字体设置结果
  * Pos: Word 格式化工具实现。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
- * Word格式化Tools - 老王的排版神器
+ * Word格式化Tools - 排版格式化模块
  * 处理文档样式、字体、目录等格式化需求
  *
  * 包含：
@@ -117,7 +117,6 @@ export const applyStyleHandler: ToolHandler = async (
 
 /**
  * 设置字体格式
- * 老王说：字体是文档的脸面，不能马虎
  */
 export const setFontDefinition: ToolDefinition = {
   name: 'wps_word_set_font',
@@ -184,7 +183,7 @@ export const setFontHandler: ToolHandler = async (
     return {
       id: uuidv4(),
       success: false,
-      content: [{ type: 'text', text: '至少要设置一个字体属性啊，啥都不设置让我干嘛？' }],
+      content: [{ type: 'text', text: '请至少指定一个字体属性（如 font_name、font_size、bold 等）' }],
       error: '没有指定任何字体属性',
     };
   }

@@ -1,4 +1,7 @@
 /**
+ * Input: Excel 操作参数
+ * Output: Excel 操作结果
+ * Pos: macOS 加载项 Excel 处理器。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
  * WPS Excel Handler - Mac版 JavaScript API实现
  * 对标Windows PowerShell COM接口，提供一致的API
  * @author 老王

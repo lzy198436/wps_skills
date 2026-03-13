@@ -2,7 +2,7 @@
  * Input: PPT 幻灯片操作参数
  * Output: 幻灯片操作结果
  * Pos: PPT 幻灯片工具实现。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
- * PPT幻灯片Tools - 老王的演示神器
+ * PPT幻灯片Tools - 幻灯片管理模块
  * 处理幻灯片的添加、美化、字体统一等操作
  *
  * 包含：
@@ -134,7 +134,7 @@ export const addSlideHandler: ToolHandler = async (
 
 /**
  * 美化幻灯片
- * 这是老王最得意的功能，一键让PPT变得专业
+ * 一键优化排版、配色、字体和间距
  */
 export const beautifyDefinition: ToolDefinition = {
   name: 'wps_ppt_beautify',

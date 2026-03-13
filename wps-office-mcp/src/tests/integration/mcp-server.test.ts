@@ -1,4 +1,7 @@
 /**
+ * Input: MCP Server 集成测试依赖
+ * Output: 集成测试断言
+ * Pos: MCP Server 集成测试。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
  * MCP Server集成测试 - 陈十三出品
  *
  * 艹，这个测试模块是用来测试mcp-server.ts的集成功能

@@ -2,12 +2,12 @@
  * Input: 公式类工具参数
  * Output: 公式计算与诊断结果
  * Pos: Excel 公式工具实现。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
- * Excel公式相关Tools - 老王的公式神器
- * 这几个工具是解决用户"公式不会写"痛点的核心，别tm给我乱改
+ * Excel公式相关Tools - 公式管理模块
+ * 解决用户"公式不会写"痛点的核心工具集
  *
  * 包含：
  * - wps_excel_set_formula: 设置公式到指定单元格
- * - wps_excel_generate_formula: 根据自然语言生成公式（这个是核心中的核心）
+ * - wps_excel_generate_formula: 根据自然语言生成公式（核心功能）
  * - wps_excel_diagnose_formula: 诊断公式错误，分析原因并提供修复建议
  */
 
@@ -24,7 +24,7 @@ import { WpsAppType } from '../../types/wps';
 
 /**
  * 设置公式到指定单元格
- * 这个工具是公式功能的执行者，生成完公式就靠它写进去
+ * 公式功能的执行端，负责将生成的公式写入单元格
  */
 export const setFormulaDefinition: ToolDefinition = {
   name: 'wps_excel_set_formula',
@@ -59,12 +59,12 @@ export const setFormulaHandler: ToolHandler = async (
     sheet?: string;
   };
 
-  // 老王说：公式必须以=开头，不然就是憨批
+  // 公式必须以=开头
   if (!formula.startsWith('=')) {
     return {
       id: uuidv4(),
       success: false,
-      content: [{ type: 'text', text: '公式必须以=开头，别给我整那些没用的' }],
+      content: [{ type: 'text', text: '公式格式错误：公式必须以=开头，如 =SUM(A1:A10)' }],
       error: '公式格式错误：必须以=开头',
     };
   }
@@ -100,7 +100,7 @@ export const setFormulaHandler: ToolHandler = async (
     return {
       id: uuidv4(),
       success: false,
-      content: [{ type: 'text', text: `艹，设置公式出错了: ${errMsg}` }],
+      content: [{ type: 'text', text: `设置公式出错: ${errMsg}` }],
       error: errMsg,
     };
   }
@@ -108,8 +108,7 @@ export const setFormulaHandler: ToolHandler = async (
 
 /**
  * 根据自然语言生成Excel公式
- * 这是核心中的核心！用户说"帮我写个公式查价格"，就靠这个生成VLOOKUP
- * 老王设计思路：先获取上下文，让AI理解表结构，然后生成公式
+ * 核心功能：获取工作表上下文，辅助AI理解表结构后生成公式
  */
 export const generateFormulaDefinition: ToolDefinition = {
   name: 'wps_excel_generate_formula',
@@ -210,7 +209,7 @@ ${context.headers.map((h) => `  ${h.column}列: ${h.value}`).join('\n')}
 
 /**
  * 诊断公式错误
- * 用户看到#REF!、#N/A、#VALUE!这些报错就懵逼，这个工具帮他们分析原因
+ * 分析#REF!、#N/A、#VALUE!等错误类型，给出原因和修复建议
  */
 export const diagnoseFormulaDefinition: ToolDefinition = {
   name: 'wps_excel_diagnose_formula',
@@ -319,7 +318,6 @@ export const diagnoseFormulaHandler: ToolHandler = async (
 
 /**
  * 导出所有公式相关的Tools
- * 老王说：整整齐齐，方便注册
  */
 export const formulaTools: RegisteredTool[] = [
   { definition: setFormulaDefinition, handler: setFormulaHandler },

@@ -2,7 +2,7 @@
  * Input: Word 内容操作参数
  * Output: 文档内容变更结果
  * Pos: Word 内容工具实现。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
- * Word内容操作Tools - 老王的文档编辑神器
+ * Word内容操作Tools - 文档内容编辑模块
  * 处理文档内容的插入、查找替换等操作
  *
  * 包含：
@@ -133,7 +133,7 @@ export const insertTextHandler: ToolHandler = async (
 
 /**
  * 查找替换功能
- * 老王最爱用的功能之一，批量替换文本太爽了
+ * 支持全文批量查找替换文本
  */
 export const findReplaceDefinition: ToolDefinition = {
   name: 'wps_word_find_replace',

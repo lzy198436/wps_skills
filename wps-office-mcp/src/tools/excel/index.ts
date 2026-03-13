@@ -2,10 +2,8 @@
  * Input: Excel 工具定义
  * Output: Excel 工具注册数组
  * Pos: Excel Tools 汇总入口。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
- * Excel Tools入口 - 老王的表格工具箱
- * 把公式、数据处理、透视表、图表的Tools都整合到这里
- *
- * 这里导出的是所有Excel相关的Tools，注册的时候一把梭哈
+ * Excel Tools入口 - Excel工具汇总模块
+ * 整合公式、数据处理、透视表、图表、工作表、格式化的所有Tools
  */
 
 import { RegisteredTool } from '../../types/tools';
@@ -13,6 +11,8 @@ import { formulaTools } from './formula';
 import { dataTools } from './data';
 import { pivotTools } from './pivot';
 import { chartTools } from './chart';
+import { sheetTools } from './sheet';
+import { excelFormatTools } from './format';
 
 /**
  * 所有Excel相关的Tools
@@ -20,13 +20,17 @@ import { chartTools } from './chart';
  * - 公式Tools: set_formula, generate_formula, diagnose_formula
  * - 数据Tools: read_range, write_range, clean_data, remove_duplicates
  * - 透视表Tools: create_pivot_table, update_pivot_table
- * - 图表Tools: create_chart, update_chart (刘大炮出品)
+ * - 图表Tools: create_chart, update_chart
+ * - 工作表Tools: create_sheet, delete_sheet, rename_sheet, copy_sheet, get_sheet_list, switch_sheet, move_sheet, get_selection
+ * - 格式化Tools: set_cell_format, set_cell_style, set_border, set_number_format, merge_cells, unmerge_cells, set_column_width, set_row_height
  */
 export const excelTools: RegisteredTool[] = [
   ...formulaTools,
   ...dataTools,
   ...pivotTools,
   ...chartTools,
+  ...sheetTools,
+  ...excelFormatTools,
 ];
 
 // 分别导出，方便按需使用
@@ -34,6 +38,8 @@ export { formulaTools } from './formula';
 export { dataTools } from './data';
 export { pivotTools } from './pivot';
 export { chartTools } from './chart';
+export { sheetTools } from './sheet';
+export { excelFormatTools } from './format';
 
 // 导出单独的定义和处理器，方便测试
 export {
@@ -69,5 +75,43 @@ export {
   updateChartDefinition,
   updateChartHandler,
 } from './chart';
+
+export {
+  createSheetDefinition,
+  createSheetHandler,
+  deleteSheetDefinition,
+  deleteSheetHandler,
+  renameSheetDefinition,
+  renameSheetHandler,
+  copySheetDefinition,
+  copySheetHandler,
+  getSheetListDefinition,
+  getSheetListHandler,
+  switchSheetDefinition,
+  switchSheetHandler,
+  moveSheetDefinition,
+  moveSheetHandler,
+  getSelectionDefinition,
+  getSelectionHandler,
+} from './sheet';
+
+export {
+  setCellFormatDefinition,
+  setCellFormatHandler,
+  setCellStyleDefinition,
+  setCellStyleHandler,
+  setBorderDefinition,
+  setBorderHandler,
+  setNumberFormatDefinition,
+  setNumberFormatHandler,
+  mergeCellsDefinition,
+  mergeCellsHandler,
+  unmergeCellsDefinition,
+  unmergeCellsHandler,
+  setColumnWidthDefinition,
+  setColumnWidthHandler,
+  setRowHeightDefinition,
+  setRowHeightHandler,
+} from './format';
 
 export default excelTools;

@@ -2,8 +2,8 @@
  * Input: Tool 定义集合
  * Output: Tool 注册数组
  * Pos: MCP Tools 总入口。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
- * Tools总入口 - 老王的工具大集合
- * 把Excel、Word、PPT、Common的所有Tools都整合到这里
+ * Tools总入口 - MCP工具汇总注册模块
+ * 整合Excel、Word、PPT、Common的所有Tools
  *
  * 使用方法：
  * import { allTools } from './tools';
@@ -20,34 +20,28 @@ import { pptTools } from './ppt';
 import { commonTools } from './common';
 
 /**
- * 所有MCP Tools集合
+ * 所有MCP Tools集合（共55个）
  *
- * 包含的Tools：
+ * Excel (27个):
+ *   公式(3): set_formula, generate_formula, diagnose_formula
+ *   数据(4): read_range, write_range, clean_data, remove_duplicates
+ *   图表(2): create_chart, update_chart
+ *   透视表(2): create_pivot_table, update_pivot_table
+ *   工作表(8): create_sheet, delete_sheet, rename_sheet, copy_sheet, get_sheet_list, switch_sheet, move_sheet, get_selection
+ *   格式化(8): set_cell_format, set_cell_style, set_border, set_number_format, merge_cells, unmerge_cells, set_column_width, set_row_height
  *
- * Excel (7个):
- * - wps_excel_set_formula: 设置公式
- * - wps_excel_generate_formula: 生成公式
- * - wps_excel_diagnose_formula: 诊断公式
- * - wps_excel_read_range: 读取数据
- * - wps_excel_write_range: 写入数据
- * - wps_excel_clean_data: 数据清洗
- * - wps_excel_remove_duplicates: 删除重复
+ * Word (9个):
+ *   格式化(3): apply_style, set_font, generate_toc
+ *   内容(2): insert_text, find_replace
+ *   文档管理(4): get_open_documents, switch_document, open_document, get_document_text
  *
- * Word (5个):
- * - wps_word_apply_style: 应用样式
- * - wps_word_set_font: 设置字体
- * - wps_word_generate_toc: 生成目录
- * - wps_word_insert_text: 插入文本
- * - wps_word_find_replace: 查找替换
- *
- * PPT (3个):
- * - wps_ppt_add_slide: 添加幻灯片
- * - wps_ppt_beautify: 美化幻灯片
- * - wps_ppt_unify_font: 统一字体
+ * PPT (17个):
+ *   幻灯片(3): add_slide, beautify, unify_font
+ *   幻灯片操作(9): delete_slide, duplicate_slide, move_slide, get_slide_count, get_slide_info, switch_slide, set_slide_layout, get_slide_notes, set_slide_notes
+ *   演示文稿管理(5): create_presentation, open_presentation, close_presentation, get_open_presentations, switch_presentation
  *
  * Common (2个):
- * - wps_convert_to_pdf: 转换为PDF
- * - wps_convert_format: 格式互转
+ *   转换(2): convert_to_pdf, convert_format
  */
 export const allTools: RegisteredTool[] = [
   ...excelTools,

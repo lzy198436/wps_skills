@@ -2,8 +2,8 @@
  * Input: 数据处理工具参数
  * Output: 读写/清洗结果
  * Pos: Excel 数据处理工具实现。一旦我被修改，请更新我的头部注释，以及所属文件夹的md。
- * Excel数据处理Tools - 老王的数据清洗神器
- * 处理那些乱七八糟的数据，去重、去空格、格式统一等
+ * Excel数据处理Tools - 数据读写与清洗模块
+ * 处理数据的读取、写入、去重、去空格、格式统一等操作
  *
  * 包含：
  * - wps_excel_read_range: 读取指定范围数据
@@ -25,7 +25,6 @@ import { WpsAppType } from '../../types/wps';
 
 /**
  * 读取指定范围的单元格数据
- * 先读后写，老王的原则是搞清楚数据长啥样再动手
  */
 export const readRangeDefinition: ToolDefinition = {
   name: 'wps_excel_read_range',
@@ -157,7 +156,7 @@ export const writeRangeHandler: ToolHandler = async (
     return {
       id: uuidv4(),
       success: false,
-      content: [{ type: 'text', text: '数据不能为空，给我整点实际的！' }],
+      content: [{ type: 'text', text: '写入数据不能为空，请提供有效的二维数组数据' }],
       error: '数据为空',
     };
   }
@@ -197,7 +196,7 @@ export const writeRangeHandler: ToolHandler = async (
 
 /**
  * 数据清洗工具
- * 这是老王的得意之作，一键处理那些乱七八糟的脏数据
+ * 一键处理脏数据，支持多种清洗操作组合
  */
 export const cleanDataDefinition: ToolDefinition = {
   name: 'wps_excel_clean_data',
