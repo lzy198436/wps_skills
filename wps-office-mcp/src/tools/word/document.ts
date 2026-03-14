@@ -13,6 +13,8 @@
  * - wps_word_insert_header: 设置页眉内容
  * - wps_word_insert_footer: 设置页脚内容
  * - wps_word_generate_toc: 自动生成文档目录
+ * - wps_word_insert_section_break: 插入分节符
+ * - wps_word_set_line_spacing: 设置行距
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -565,6 +567,151 @@ export const generateDocTocHandler: ToolHandler = async (
 };
 
 /**
+ * 插入分节符
+ */
+export const insertSectionBreakDefinition: ToolDefinition = {
+  name: 'wps_word_insert_section_break',
+  description: `插入分节符，用于将文档分为不同的节，以便对各节应用不同的页面设置。
+
+使用场景：
+- "插入一个分节符"
+- "从下一页开始新的一节"
+- "在这里分节"`,
+  category: ToolCategory.DOCUMENT,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      breakType: {
+        type: 'string',
+        description: '分节符类型：nextPage(下一页)、continuous(连续)、evenPage(偶数页)、oddPage(奇数页)，默认nextPage',
+        default: 'nextPage',
+      },
+    },
+  },
+};
+
+export const insertSectionBreakHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { breakType = 'nextPage' } = args as { breakType?: string };
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'insertSectionBreak',
+      { breakType },
+      WpsAppType.WRITER
+    );
+
+    if (response.success) {
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [{ type: 'text', text: `分节符已插入（类型: ${breakType}）` }],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `插入分节符失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `插入分节符出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+/**
+ * 设置行距
+ */
+export const setLineSpacingDefinition: ToolDefinition = {
+  name: 'wps_word_set_line_spacing',
+  description: `设置段落行距。
+
+使用场景：
+- "把行距设为1.5倍"
+- "设置第3段的行距为2倍"
+- "调整行距"`,
+  category: ToolCategory.DOCUMENT,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      lineSpacing: {
+        type: 'number',
+        description: '行距值（如1.0、1.5、2.0等）',
+      },
+      paragraphIndex: {
+        type: 'number',
+        description: '段落索引（从0开始），不指定则应用于当前段落或全文',
+      },
+    },
+    required: ['lineSpacing'],
+  },
+};
+
+export const setLineSpacingHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { lineSpacing, paragraphIndex } = args as { lineSpacing: number; paragraphIndex?: number };
+
+  if (lineSpacing === undefined || lineSpacing <= 0) {
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: '行距值必须为正数！' }],
+      error: '行距值无效',
+    };
+  }
+
+  try {
+    const params: Record<string, unknown> = { lineSpacing };
+    if (paragraphIndex !== undefined) params.paragraphIndex = paragraphIndex;
+
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'setLineSpacing',
+      params,
+      WpsAppType.WRITER
+    );
+
+    if (response.success) {
+      const target = paragraphIndex !== undefined ? `第${paragraphIndex}段` : '当前段落';
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [{ type: 'text', text: `行距已设置为 ${lineSpacing} 倍（${target}）` }],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `设置行距失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `设置行距出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+/**
  * 导出所有文档管理相关的Tools
  */
 export const documentTools: RegisteredTool[] = [
@@ -575,6 +722,8 @@ export const documentTools: RegisteredTool[] = [
   { definition: insertHeaderDefinition, handler: insertHeaderHandler },
   { definition: insertFooterDefinition, handler: insertFooterHandler },
   { definition: generateDocTocDefinition, handler: generateDocTocHandler },
+  { definition: insertSectionBreakDefinition, handler: insertSectionBreakHandler },
+  { definition: setLineSpacingDefinition, handler: setLineSpacingHandler },
 ];
 
 export default documentTools;
