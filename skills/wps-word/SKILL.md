@@ -64,16 +64,37 @@ description: WPS 文字智能助手，通过自然语言操控 Word 文档，解
 
 ### Step 4: 执行操作
 
-调用相应MCP工具完成操作：
-- `wps_word_set_font`：设置字体格式（font_name, font_size, bold, italic, underline, color, range）
-- `wps_word_apply_style`：应用样式（style_name, range）
-- `wps_word_find_replace`：查找替换（find_text, replace_text, replace_all, match_case, match_whole_word）
-- `wps_word_insert_text`：插入文本（text, position, style, new_paragraph）
-- `wps_word_generate_toc`：生成目录（position, levels, include_page_numbers）
+调用相应MCP工具完成操作（共22个已注册工具）：
+
+**文档管理：**
 - `wps_word_get_open_documents`：获取打开的文档列表
 - `wps_word_switch_document`：切换文档（name）
 - `wps_word_open_document`：打开文档（filePath）
 - `wps_word_get_document_text`：获取文档文本（start, end）
+- `wps_word_get_active_document`：获取当前活动文档信息
+
+**内容操作：**
+- `wps_word_insert_text`：插入文本（text, position, style, new_paragraph）
+- `wps_word_find_replace`：查找替换（find_text, replace_text, replace_all, match_case, match_whole_word）
+- `wps_word_insert_table`：插入表格（rows, cols）
+- `wps_word_insert_image`：插入图片（imagePath, width, height）
+- `wps_word_insert_comment`：插入批注（text）
+- `wps_word_insert_page_break`：插入分页符
+- `wps_word_insert_bookmark`：插入书签（name）
+
+**格式设置：**
+- `wps_word_set_font`：设置字体格式（font_name, font_size, bold, italic, underline, color, range）
+- `wps_word_apply_style`：应用样式（style_name, range）
+- `wps_word_set_paragraph`：设置段落格式（alignment, lineSpacing）
+- `wps_word_set_text_color`：设置文字颜色（color）
+- `wps_word_set_line_spacing`：设置行距（lineSpacing, paragraphIndex）
+- `wps_word_generate_toc`：生成目录（position, levels, include_page_numbers）
+
+**页面布局：**
+- `wps_word_set_page_setup`：设置页面布局（orientation, marginTop/Bottom/Left/Right）
+- `wps_word_insert_header`：设置页眉（text, section）
+- `wps_word_insert_footer`：设置页脚（text, section）
+- `wps_word_insert_section_break`：插入分节符（breakType）
 
 ### Step 5: 反馈结果
 
@@ -125,12 +146,11 @@ description: WPS 文字智能助手，通过自然语言操控 Word 文档，解
 **用户说**：「插入一个3行4列的表格」
 
 **处理步骤**：
-1. 调用 `wps_word_insert_text`：
-   - text: （表格内容，当前MCP工具暂不支持直接插入表格，可通过插入文本模拟）
+1. 调用 `wps_word_insert_table`：
+   - rows: 3
+   - cols: 4
 2. 可选：询问是否需要填充表头
 3. 告知表格已插入
-
-> 注意：直接插入表格功能尚未注册为MCP工具，当前可通过 `wps_word_insert_text` 插入制表符分隔文本作为替代。
 
 ### 场景5: 标题样式设置
 
@@ -234,9 +254,9 @@ description: WPS 文字智能助手，通过自然语言操控 Word 文档，解
 
 ## 可用MCP工具
 
-本Skill通过以下MCP工具与WPS Office交互（共9个已注册工具）：
+本Skill通过以下MCP工具与WPS Office交互（共22个已注册工具）：
 
-### 文档管理工具
+### 文档管理工具（5个）
 
 | MCP工具名称 | 功能描述 | 关键参数 |
 |------------|---------|---------|
@@ -244,21 +264,39 @@ description: WPS 文字智能助手，通过自然语言操控 Word 文档，解
 | `wps_word_switch_document` | 切换到指定名称的文档 | `name`: 文档名称（必填） |
 | `wps_word_open_document` | 打开指定路径的文档 | `filePath`: 文件路径（必填） |
 | `wps_word_get_document_text` | 获取文档文本内容 | `start`: 起始位置, `end`: 结束位置 |
+| `wps_word_get_active_document` | 获取当前活动文档的基本信息（名称、路径、页数、字数） | 无参数 |
 
-### 内容操作工具
+### 内容操作工具（7个）
 
 | MCP工具名称 | 功能描述 | 关键参数 |
 |------------|---------|---------|
 | `wps_word_insert_text` | 在指定位置插入文本 | `text`（必填）, `position`("cursor"/"start"/"end"), `style`, `new_paragraph` |
 | `wps_word_find_replace` | 查找并替换文本 | `find_text`（必填）, `replace_text`, `replace_all`, `match_case`, `match_whole_word` |
+| `wps_word_insert_table` | 在光标位置插入表格 | `rows`（必填）, `cols`（必填） |
+| `wps_word_insert_image` | 在文档中插入图片 | `imagePath`（必填）, `width`, `height`（磅） |
+| `wps_word_insert_comment` | 在选中内容处插入批注 | `text`（必填） |
+| `wps_word_insert_page_break` | 在光标位置插入分页符 | 无参数 |
+| `wps_word_insert_bookmark` | 在光标位置或选中区域插入书签 | `name`（必填） |
 
-### 格式设置工具
+### 格式设置工具（6个）
 
 | MCP工具名称 | 功能描述 | 关键参数 |
 |------------|---------|---------|
-| `wps_word_apply_style` | 应用样式到选中区域 | `style_name`（必填）, `range`(start/end) |
 | `wps_word_set_font` | 设置字体格式 | `font_name`, `font_size`, `bold`, `italic`, `underline`, `color`, `range`("selection"/"all") |
+| `wps_word_apply_style` | 应用样式到选中区域 | `style_name`（必填）, `range`(start/end) |
+| `wps_word_set_paragraph` | 设置段落格式 | `alignment`("left"/"center"/"right"/"justify"), `lineSpacing`(倍数) |
+| `wps_word_set_text_color` | 设置选中文字颜色 | `color`（必填，如"#FF0000"或"red"） |
+| `wps_word_set_line_spacing` | 设置行距 | `lineSpacing`（必填，如1.5/2.0）, `paragraphIndex`(段落索引) |
 | `wps_word_generate_toc` | 生成文档目录 | `position`("start"/"cursor"), `levels`(默认3), `include_page_numbers` |
+
+### 页面布局工具（4个）
+
+| MCP工具名称 | 功能描述 | 关键参数 |
+|------------|---------|---------|
+| `wps_word_set_page_setup` | 设置页面布局 | `orientation`("portrait"/"landscape"), `marginTop/Bottom/Left/Right`(磅值) |
+| `wps_word_insert_header` | 设置页眉内容 | `text`（必填）, `section`(节编号，默认1) |
+| `wps_word_insert_footer` | 设置页脚内容 | `text`（必填）, `section`(节编号，默认1) |
+| `wps_word_insert_section_break` | 插入分节符 | `breakType`("nextPage"/"continuous"/"evenPage"/"oddPage"，默认nextPage) |
 
 ### 调用示例
 
@@ -303,20 +341,49 @@ wps_word_generate_toc({
   levels: 3,
   include_page_numbers: true
 })
+
+// 插入表格
+wps_word_insert_table({
+  rows: 3,
+  cols: 4
+})
+
+// 插入图片
+wps_word_insert_image({
+  imagePath: "/path/to/image.png",
+  width: 400,
+  height: 300
+})
+
+// 设置页面为横向
+wps_word_set_page_setup({
+  orientation: "landscape",
+  marginTop: 72,
+  marginBottom: 72
+})
+
+// 插入批注
+wps_word_insert_comment({
+  text: "请核实此数据"
+})
+
+// 设置行距
+wps_word_set_line_spacing({
+  lineSpacing: 1.5
+})
+
+// 设置页眉
+wps_word_insert_header({
+  text: "公司内部文件"
+})
 ```
 
 ### 尚未注册为MCP工具的功能
 
 以下功能在handler层（wps-claude-assistant）已实现，但尚未注册为独立MCP工具：
-- 段落格式设置（setParagraph）
-- 分页符插入（insertPageBreak）
-- 页眉页脚设置（insertHeader/insertFooter）
-- 页面设置（setPageSetup）
-- 表格插入（insertTable）
-- 图片插入（insertImage）
 - 超链接插入（insertHyperlink）
-- 书签操作（insertBookmark/getBookmarks）
-- 批注操作（addComment/getComments）
+- 书签获取（getBookmarks）
+- 批注获取（getComments）
 - 文档统计（getDocumentStats）
 
 ## 快捷操作提示
