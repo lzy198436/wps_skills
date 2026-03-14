@@ -16,7 +16,7 @@ import { documentTools } from './document';
  * 包含：
  * - 格式化Tools: apply_style, set_font, generate_toc
  * - 内容Tools: insert_text, find_replace, insert_table, set_paragraph, get_active_document
- * - 文档管理Tools: get_open_documents, switch_document, open_document, get_document_text
+ * - 文档管理Tools: get_open_documents, switch_document, open_document, get_document_text, insert_header, insert_footer, generate_toc(doc)
  */
 export const wordTools: RegisteredTool[] = [
   ...formatTools,
@@ -61,6 +61,12 @@ export {
   openDocumentHandler,
   getDocumentTextDefinition,
   getDocumentTextHandler,
+  insertHeaderDefinition,
+  insertHeaderHandler,
+  insertFooterDefinition,
+  insertFooterHandler,
+  generateDocTocDefinition,
+  generateDocTocHandler,
 } from './document';
 
 export default wordTools;

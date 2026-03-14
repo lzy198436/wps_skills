@@ -10,6 +10,9 @@
  * - wps_word_switch_document: 切换到指定文档
  * - wps_word_open_document: 打开指定路径的文档
  * - wps_word_get_document_text: 获取文档文本内容
+ * - wps_word_insert_header: 设置页眉内容
+ * - wps_word_insert_footer: 设置页脚内容
+ * - wps_word_generate_toc: 自动生成文档目录
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -340,6 +343,228 @@ export const getDocumentTextHandler: ToolHandler = async (
 };
 
 /**
+ * 设置页眉内容
+ */
+export const insertHeaderDefinition: ToolDefinition = {
+  name: 'wps_word_insert_header',
+  description: `设置页眉内容。
+
+使用场景：
+- "给文档加个页眉"
+- "设置页眉为公司名称"
+- "修改第2节的页眉"`,
+  category: ToolCategory.DOCUMENT,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      text: {
+        type: 'string',
+        description: '页眉文本内容',
+      },
+      section: {
+        type: 'number',
+        description: '节编号（从1开始），默认1',
+        default: 1,
+      },
+    },
+    required: ['text'],
+  },
+};
+
+export const insertHeaderHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { text, section = 1 } = args as { text: string; section?: number };
+
+  if (!text) {
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: '页眉文本不能为空！' }],
+      error: '页眉文本为空',
+    };
+  }
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'insertHeader',
+      { text, section },
+      WpsAppType.WRITER
+    );
+
+    if (response.success) {
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [{ type: 'text', text: `页眉已设置: "${text}" (第${section}节)` }],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `设置页眉失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `设置页眉出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+/**
+ * 设置页脚内容
+ */
+export const insertFooterDefinition: ToolDefinition = {
+  name: 'wps_word_insert_footer',
+  description: `设置页脚内容。
+
+使用场景：
+- "给文档加个页脚"
+- "设置页脚为页码"
+- "修改第1节的页脚"`,
+  category: ToolCategory.DOCUMENT,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      text: {
+        type: 'string',
+        description: '页脚文本内容',
+      },
+      section: {
+        type: 'number',
+        description: '节编号（从1开始），默认1',
+        default: 1,
+      },
+    },
+    required: ['text'],
+  },
+};
+
+export const insertFooterHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { text, section = 1 } = args as { text: string; section?: number };
+
+  if (!text) {
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: '页脚文本不能为空！' }],
+      error: '页脚文本为空',
+    };
+  }
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'insertFooter',
+      { text, section },
+      WpsAppType.WRITER
+    );
+
+    if (response.success) {
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [{ type: 'text', text: `页脚已设置: "${text}" (第${section}节)` }],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `设置页脚失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `设置页脚出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+/**
+ * 自动生成文档目录
+ */
+export const generateDocTocDefinition: ToolDefinition = {
+  name: 'wps_word_generate_toc',
+  description: `自动生成文档目录。根据文档中的标题样式自动生成目录。
+
+前提条件：文档中的标题必须使用"标题1"、"标题2"等样式。
+
+使用场景：
+- "帮我生成目录"
+- "在文档开头插入目录"
+- "自动生成文档目录"`,
+  category: ToolCategory.DOCUMENT,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      levels: {
+        type: 'number',
+        description: '目录包含的标题级别数，如3表示包含标题1-3，默认3',
+        default: 3,
+      },
+    },
+  },
+};
+
+export const generateDocTocHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { levels = 3 } = args as { levels?: number };
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'generateToc',
+      { levels },
+      WpsAppType.WRITER
+    );
+
+    if (response.success) {
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [{ type: 'text', text: `目录已生成（包含标题1-${levels}级）` }],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `生成目录失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `生成目录出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+/**
  * 导出所有文档管理相关的Tools
  */
 export const documentTools: RegisteredTool[] = [
@@ -347,6 +572,9 @@ export const documentTools: RegisteredTool[] = [
   { definition: switchDocumentDefinition, handler: switchDocumentHandler },
   { definition: openDocumentDefinition, handler: openDocumentHandler },
   { definition: getDocumentTextDefinition, handler: getDocumentTextHandler },
+  { definition: insertHeaderDefinition, handler: insertHeaderHandler },
+  { definition: insertFooterDefinition, handler: insertFooterHandler },
+  { definition: generateDocTocDefinition, handler: generateDocTocHandler },
 ];
 
 export default documentTools;
