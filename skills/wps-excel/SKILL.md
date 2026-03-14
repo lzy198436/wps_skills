@@ -202,17 +202,20 @@ description: WPS 表格智能助手，通过自然语言操控 Excel，解决公
 
 ## 可用MCP工具
 
-本Skill通过以下已注册MCP工具与WPS Office交互（共27个）：
+本Skill通过以下已注册MCP工具与WPS Office交互（共46个）：
 
-### 公式工具（3个）
+### 公式工具（6个）
 
 | MCP工具 | 功能描述 | 关键参数 |
 |---------|---------|----------|
 | `wps_excel_set_formula` | 在指定单元格设置公式（必须以=开头） | range, formula, sheet? |
 | `wps_excel_generate_formula` | 根据自然语言生成公式，自动获取工作表上下文 | description, target_cell? |
 | `wps_excel_diagnose_formula` | 诊断公式错误，分析原因并提供修复建议 | cell |
+| `wps_excel_evaluate_formula` | 计算并返回公式的结果值 | formula, sheet? |
+| `wps_excel_set_print_area` | 设置工作表的打印区域 | range, sheet? |
+| `wps_excel_zoom` | 设置工作表缩放比例 | level, sheet? |
 
-### 数据工具（4个）
+### 数据工具（10个）
 
 | MCP工具 | 功能描述 | 关键参数 |
 |---------|---------|----------|
@@ -220,6 +223,12 @@ description: WPS 表格智能助手，通过自然语言操控 Excel，解决公
 | `wps_excel_write_range` | 向指定范围写入二维数组数据 | range, data, sheet? |
 | `wps_excel_clean_data` | 数据清洗（trim/remove_duplicates/unify_date/remove_empty_rows） | range, operations, sheet? |
 | `wps_excel_remove_duplicates` | 删除指定范围内的重复行 | range, columns?, has_header?, sheet? |
+| `wps_excel_sort_range` | 对指定范围进行排序 | range, column, order?, sheet? |
+| `wps_excel_find_replace` | 在工作表中查找和替换内容 | find, replace?, range?, sheet? |
+| `wps_excel_insert_row` | 在指定位置插入行 | row, count?, sheet? |
+| `wps_excel_add_comment` | 为单元格添加批注 | cell, comment, sheet? |
+| `wps_excel_protect_sheet` | 保护工作表（防止编辑） | password?, sheet? |
+| `wps_excel_set_conditional_format` | 设置条件格式规则 | range, rule, format, sheet? |
 
 ### 图表工具（2个）
 
@@ -237,7 +246,7 @@ description: WPS 表格智能助手，通过自然语言操控 Excel，解决公
 | `wps_excel_create_pivot_table` | 创建数据透视表 | sourceRange, destinationCell, rowFields, valueFields, columnFields?, filterFields? |
 | `wps_excel_update_pivot_table` | 更新透视表配置（添加/移除字段、刷新） | pivotTableName/pivotTableCell, add/removeRowFields, refresh? |
 
-### 工作表管理工具（8个）
+### 工作表管理工具（16个）
 
 | MCP工具 | 功能描述 | 关键参数 |
 |---------|---------|----------|
@@ -249,8 +258,16 @@ description: WPS 表格智能助手，通过自然语言操控 Excel，解决公
 | `wps_excel_switch_sheet` | 切换到指定工作表 | name |
 | `wps_excel_move_sheet` | 移动工作表到指定位置 | name, position |
 | `wps_excel_get_selection` | 获取当前选中区域信息 | （无参数） |
+| `wps_excel_delete_row` | 删除指定行 | row, count?, sheet? |
+| `wps_excel_insert_column` | 在指定位置插入列 | column, count?, sheet? |
+| `wps_excel_delete_column` | 删除指定列 | column, count?, sheet? |
+| `wps_excel_freeze_panes` | 冻结窗格 | cell, sheet? |
+| `wps_excel_auto_fill` | 自动填充序列 | source, destination, sheet? |
+| `wps_excel_set_named_range` | 创建或更新命名范围 | name, range, sheet? |
+| `wps_excel_hide_column` | 隐藏指定列 | column, sheet? |
+| `wps_excel_auto_sum` | 对指定范围自动求和 | range, target?, sheet? |
 
-### 格式化工具（8个）
+### 格式化工具（10个）
 
 | MCP工具 | 功能描述 | 关键参数 |
 |---------|---------|----------|
@@ -262,6 +279,8 @@ description: WPS 表格智能助手，通过自然语言操控 Excel，解决公
 | `wps_excel_unmerge_cells` | 拆分已合并的单元格 | range, sheet? |
 | `wps_excel_set_column_width` | 设置列宽 | column, width, sheet? |
 | `wps_excel_set_row_height` | 设置行高 | row, height, sheet? |
+| `wps_excel_hide_row` | 隐藏指定行 | row, sheet? |
+| `wps_excel_set_data_validation` | 设置数据验证规则 | range, type, formula?, sheet? |
 
 ### macOS handler已支持但尚未注册为MCP工具的action
 
@@ -269,19 +288,18 @@ description: WPS 表格智能助手，通过自然语言操控 Excel，解决公
 
 | 分类 | action列表 |
 |------|-----------|
-| 排序筛选 | sortRange, autoFilter |
-| 行列操作 | insertRows, insertColumns, deleteRows, deleteColumns, hideRows, hideColumns, showRows, showColumns |
-| 范围操作 | copyRange, pasteRange, fillSeries, transpose, textToColumns, subtotal |
-| 条件格式 | addConditionalFormat, removeConditionalFormat, getConditionalFormats |
-| 数据验证 | addDataValidation, removeDataValidation, getDataValidations |
-| 查找替换 | findInSheet, replaceInSheet |
-| 命名范围 | createNamedRange, deleteNamedRange, getNamedRanges |
-| 批注 | addCellComment, deleteCellComment, getCellComments |
-| 保护 | protectSheet, unprotectSheet, protectWorkbook |
-| 格式辅助 | autoFitColumn, autoFitRow, autoFitAll, freezePanes, unfreezePanes, copyFormat, clearFormats |
+| 排序筛选 | autoFilter |
+| 行列操作 | showRows, showColumns |
+| 范围操作 | copyRange, pasteRange, transpose, textToColumns, subtotal |
+| 条件格式 | removeConditionalFormat, getConditionalFormats |
+| 数据验证 | removeDataValidation, getDataValidations |
+| 命名范围 | deleteNamedRange, getNamedRanges |
+| 批注 | deleteCellComment, getCellComments |
+| 保护 | unprotectSheet, protectWorkbook |
+| 格式辅助 | autoFitColumn, autoFitRow, autoFitAll, unfreezePanes, copyFormat, clearFormats |
 | 工作簿管理 | openWorkbook, getOpenWorkbooks, switchWorkbook, closeWorkbook, createWorkbook |
 | 单元格信息 | getFormula, getCellInfo, clearRange, getContext |
-| 高级功能 | refreshLinks, consolidate, setArrayFormula, calculateSheet, insertExcelImage, setHyperlink, wrapText, setPrintArea, groupRows, groupColumns, lockCells |
+| 高级功能 | refreshLinks, consolidate, setArrayFormula, calculateSheet, insertExcelImage, setHyperlink, wrapText, groupRows, groupColumns, lockCells |
 
 ### 调用示例
 
@@ -321,4 +339,4 @@ wps_excel_get_sheet_list()
 
 *Skill by lc2panda - WPS MCP Project*
 
-<!-- 审计记录：2026-03-14 Agent-Skills-Excel 完成审计修复 -->
+<!-- 审计记录：2026-03-14 T16 同步工具列表 27→46个MCP工具 -->
