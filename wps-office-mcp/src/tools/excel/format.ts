@@ -13,6 +13,8 @@
  * - wps_excel_unmerge_cells: 拆分合并的单元格
  * - wps_excel_set_column_width: 设置列宽
  * - wps_excel_set_row_height: 设置行高
+ * - wps_excel_hide_row: 隐藏/显示行
+ * - wps_excel_set_data_validation: 设置数据验证规则
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -680,6 +682,173 @@ export const setRowHeightHandler: ToolHandler = async (
 };
 
 // ============================================================
+// 9. wps_excel_hide_row - 隐藏/显示行
+// ============================================================
+
+export const hideRowDefinition: ToolDefinition = {
+  name: 'wps_excel_hide_row',
+  description: '隐藏或显示Excel指定行。可一次操作连续多行。',
+  category: ToolCategory.SPREADSHEET,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      row: {
+        type: 'number',
+        description: '起始行号，从1开始',
+      },
+      count: {
+        type: 'number',
+        description: '连续行数，默认1',
+      },
+      hide: {
+        type: 'boolean',
+        description: '是否隐藏，true=隐藏 false=显示，默认true',
+      },
+      sheet: {
+        type: 'string',
+        description: '工作表名称，不填则使用当前活动工作表',
+      },
+    },
+    required: ['row'],
+  },
+};
+
+export const hideRowHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { row, count = 1, hide = true, sheet } = args as {
+    row: number;
+    count?: number;
+    hide?: boolean;
+    sheet?: string;
+  };
+
+  if (row < 1) {
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: '行号必须大于等于1' }],
+      error: '行号无效',
+    };
+  }
+
+  try {
+    const response = await wpsClient.executeMethod(
+      'hideRow',
+      { row, count, hide, sheet },
+      WpsAppType.SPREADSHEET
+    );
+
+    if (!response.success) {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `${hide ? '隐藏' : '显示'}行失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+
+    return {
+      id: uuidv4(),
+      success: true,
+      content: [
+        {
+          type: 'text',
+          text: `行${hide ? '隐藏' : '显示'}成功！\n起始行: ${row}\n行数: ${count}`,
+        },
+      ],
+    };
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `${hide ? '隐藏' : '显示'}行出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+// ============================================================
+// 10. wps_excel_set_data_validation - 设置数据验证规则
+// ============================================================
+
+export const setDataValidationDefinition: ToolDefinition = {
+  name: 'wps_excel_set_data_validation',
+  description: '设置Excel单元格的数据验证规则，如下拉列表、数值范围、日期范围等。',
+  category: ToolCategory.SPREADSHEET,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      range: {
+        type: 'string',
+        description: '要设置验证的范围，如 A1:A100',
+      },
+      type: {
+        type: 'string',
+        description: '验证类型：list(下拉列表)、whole(整数)、decimal(小数)、date(日期)、textLength(文本长度)、custom(自定义)',
+      },
+      formula: {
+        type: 'string',
+        description: '验证公式。list类型用逗号分隔值如"选项1,选项2,选项3"；数值类型如"1,100"表示范围；custom类型为Excel公式',
+      },
+      sheet: {
+        type: 'string',
+        description: '工作表名称，不填则使用当前活动工作表',
+      },
+    },
+    required: ['range', 'type', 'formula'],
+  },
+};
+
+export const setDataValidationHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { range, type, formula, sheet } = args as {
+    range: string;
+    type: string;
+    formula: string;
+    sheet?: string;
+  };
+
+  try {
+    const response = await wpsClient.executeMethod(
+      'setDataValidation',
+      { range, type, formula, sheet },
+      WpsAppType.SPREADSHEET
+    );
+
+    if (!response.success) {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `设置数据验证失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+
+    return {
+      id: uuidv4(),
+      success: true,
+      content: [
+        {
+          type: 'text',
+          text: `数据验证设置成功！\n范围: ${range}\n类型: ${type}\n规则: ${formula}`,
+        },
+      ],
+    };
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `设置数据验证出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+// ============================================================
 // 导出所有格式化相关的Tools
 // ============================================================
 
@@ -692,6 +861,8 @@ export const excelFormatTools: RegisteredTool[] = [
   { definition: unmergeCellsDefinition, handler: unmergeCellsHandler },
   { definition: setColumnWidthDefinition, handler: setColumnWidthHandler },
   { definition: setRowHeightDefinition, handler: setRowHeightHandler },
+  { definition: hideRowDefinition, handler: hideRowHandler },
+  { definition: setDataValidationDefinition, handler: setDataValidationHandler },
 ];
 
 export default excelFormatTools;
