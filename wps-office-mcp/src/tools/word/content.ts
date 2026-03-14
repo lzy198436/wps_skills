@@ -422,6 +422,95 @@ export const getActiveDocumentHandler: ToolHandler = async (
 };
 
 /**
+ * 在文档中插入图片
+ */
+export const insertImageDefinition: ToolDefinition = {
+  name: 'wps_word_insert_image',
+  description: `在Word文档中插入图片。
+
+使用场景：
+- "在文档中插入一张图片"
+- "把这个截图放到文档里"
+- "在光标位置插入logo"`,
+  category: ToolCategory.DOCUMENT,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      imagePath: {
+        type: 'string',
+        description: '图片文件路径',
+      },
+      width: {
+        type: 'number',
+        description: '图片宽度（磅），可选',
+      },
+      height: {
+        type: 'number',
+        description: '图片高度（磅），可选',
+      },
+    },
+    required: ['imagePath'],
+  },
+};
+
+export const insertImageHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { imagePath, width, height } = args as {
+    imagePath: string;
+    width?: number;
+    height?: number;
+  };
+
+  if (!imagePath || imagePath.trim() === '') {
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: '图片路径不能为空！' }],
+      error: '图片路径为空',
+    };
+  }
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'insertImage',
+      { imagePath, width, height },
+      WpsAppType.WRITER
+    );
+
+    if (response.success) {
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [
+          {
+            type: 'text',
+            text: `图片插入成功！\n路径: ${imagePath}${width ? `\n宽度: ${width}磅` : ''}${height ? `\n高度: ${height}磅` : ''}`,
+          },
+        ],
+      };
+    }
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `插入图片失败: ${response.error}` }],
+      error: response.error,
+    };
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `插入图片出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+/**
  * 导出所有内容操作相关的Tools
  */
 export const contentTools: RegisteredTool[] = [
@@ -430,6 +519,7 @@ export const contentTools: RegisteredTool[] = [
   { definition: insertTableDefinition, handler: insertTableHandler },
   { definition: setParagraphDefinition, handler: setParagraphHandler },
   { definition: getActiveDocumentDefinition, handler: getActiveDocumentHandler },
+  { definition: insertImageDefinition, handler: insertImageHandler },
 ];
 
 export default contentTools;
