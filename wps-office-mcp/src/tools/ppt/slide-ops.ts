@@ -21,6 +21,9 @@
  * - wps_ppt_set_slide_title: 设置幻灯片标题
  * - wps_ppt_insert_image: 插入图片
  * - wps_ppt_set_shape_text: 设置形状文字
+ * - wps_ppt_set_animation: 设置元素动画
+ * - wps_ppt_set_background: 设置幻灯片背景
+ * - wps_ppt_set_slide_size: 设置幻灯片尺寸
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -1340,6 +1343,273 @@ export const setShapeTextHandler: ToolHandler = async (
 };
 
 // ============================================================
+// 16. wps_ppt_set_animation - 设置元素动画
+// ============================================================
+
+export const setAnimationDefinition: ToolDefinition = {
+  name: 'wps_ppt_set_animation',
+  description: `设置幻灯片中指定元素的动画效果。
+
+支持的动画类型：
+- fadeIn: 淡入
+- flyIn: 飞入
+- wipeIn: 擦除
+- zoomIn: 缩放进入
+- bounceIn: 弹跳进入
+- spinIn: 旋转进入
+- fadeOut: 淡出
+- flyOut: 飞出
+
+使用场景：
+- "给第1页的第2个元素添加淡入动画"
+- "设置飞入效果"
+- "给形状加个弹跳动画"`,
+  category: ToolCategory.PRESENTATION,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      slideIndex: {
+        type: 'number',
+        description: '幻灯片索引（从1开始）',
+      },
+      shapeIndex: {
+        type: 'number',
+        description: '形状索引（从1开始）',
+      },
+      animationType: {
+        type: 'string',
+        description: '动画类型，如 fadeIn, flyIn, wipeIn, zoomIn, bounceIn, spinIn, fadeOut, flyOut',
+      },
+    },
+    required: ['slideIndex', 'shapeIndex', 'animationType'],
+  },
+};
+
+export const setAnimationHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { slideIndex, shapeIndex, animationType } = args as {
+    slideIndex: number;
+    shapeIndex: number;
+    animationType: string;
+  };
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'setAnimation',
+      { slideIndex, shapeIndex, animationType },
+      WpsAppType.PRESENTATION
+    );
+
+    if (response.success) {
+      const animNameMap: Record<string, string> = {
+        fadeIn: '淡入', flyIn: '飞入', wipeIn: '擦除', zoomIn: '缩放进入',
+        bounceIn: '弹跳进入', spinIn: '旋转进入', fadeOut: '淡出', flyOut: '飞出',
+      };
+
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [
+          {
+            type: 'text',
+            text: `动画设置成功！\n幻灯片: 第 ${slideIndex} 页\n形状: 第 ${shapeIndex} 个\n动画: ${animNameMap[animationType] || animationType}`,
+          },
+        ],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `设置动画失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `设置动画出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+// ============================================================
+// 17. wps_ppt_set_background - 设置幻灯片背景
+// ============================================================
+
+export const setBackgroundDefinition: ToolDefinition = {
+  name: 'wps_ppt_set_background',
+  description: `设置幻灯片的背景颜色或背景图片。
+
+使用场景：
+- "把第1页背景改成蓝色"
+- "设置幻灯片背景图片"
+- "修改背景颜色为#FF0000"`,
+  category: ToolCategory.PRESENTATION,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      slideIndex: {
+        type: 'number',
+        description: '幻灯片索引（从1开始）',
+      },
+      color: {
+        type: 'string',
+        description: '背景颜色，十六进制如 #FF0000（与imagePath二选一）',
+      },
+      imagePath: {
+        type: 'string',
+        description: '背景图片路径（与color二选一）',
+      },
+    },
+    required: ['slideIndex'],
+  },
+};
+
+export const setBackgroundHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { slideIndex, color, imagePath } = args as {
+    slideIndex: number;
+    color?: string;
+    imagePath?: string;
+  };
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'setBackground',
+      { slideIndex, color, imagePath },
+      WpsAppType.PRESENTATION
+    );
+
+    if (response.success) {
+      let detail = '';
+      if (color) detail = `背景颜色: ${color}`;
+      else if (imagePath) detail = `背景图片: ${imagePath}`;
+
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [
+          {
+            type: 'text',
+            text: `幻灯片背景设置成功！\n幻灯片: 第 ${slideIndex} 页\n${detail}`,
+          },
+        ],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `设置背景失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `设置背景出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+// ============================================================
+// 18. wps_ppt_set_slide_size - 设置幻灯片尺寸
+// ============================================================
+
+export const setSlideSizeDefinition: ToolDefinition = {
+  name: 'wps_ppt_set_slide_size',
+  description: `设置演示文稿的幻灯片尺寸。
+
+常用尺寸：
+- 标准(4:3): 宽960, 高720
+- 宽屏(16:9): 宽960, 高540
+- 宽屏(16:10): 宽960, 高600
+- A4横版: 宽1123, 高794
+- A4竖版: 宽794, 高1123
+
+使用场景：
+- "把PPT改成16:9宽屏"
+- "设置幻灯片为A4尺寸"
+- "修改幻灯片大小"`,
+  category: ToolCategory.PRESENTATION,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      width: {
+        type: 'number',
+        description: '幻灯片宽度（像素）',
+      },
+      height: {
+        type: 'number',
+        description: '幻灯片高度（像素）',
+      },
+    },
+    required: ['width', 'height'],
+  },
+};
+
+export const setSlideSizeHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { width, height } = args as {
+    width: number;
+    height: number;
+  };
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'setSlideSize',
+      { width, height },
+      WpsAppType.PRESENTATION
+    );
+
+    if (response.success) {
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [
+          {
+            type: 'text',
+            text: `幻灯片尺寸设置成功！\n宽度: ${width}px\n高度: ${height}px`,
+          },
+        ],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `设置幻灯片尺寸失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `设置幻灯片尺寸出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+// ============================================================
 // 导出所有幻灯片操作相关的Tools
 // ============================================================
 
@@ -1359,6 +1629,9 @@ export const slideOpsTools: RegisteredTool[] = [
   { definition: setSlideTitleDefinition, handler: setSlideTitleHandler },
   { definition: insertImageDefinition, handler: insertImageHandler },
   { definition: setShapeTextDefinition, handler: setShapeTextHandler },
+  { definition: setAnimationDefinition, handler: setAnimationHandler },
+  { definition: setBackgroundDefinition, handler: setBackgroundHandler },
+  { definition: setSlideSizeDefinition, handler: setSlideSizeHandler },
 ];
 
 export default slideOpsTools;

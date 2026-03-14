@@ -9,7 +9,8 @@
  * - 幻灯片Tools: add_slide, beautify, unify_font
  * - 幻灯片操作Tools: delete_slide, duplicate_slide, move_slide, get_slide_count,
  *   get_slide_info, switch_slide, set_slide_layout, get_slide_notes, set_slide_notes,
- *   add_shape, set_shape_style, add_textbox, set_slide_title, insert_image, set_shape_text
+ *   add_shape, set_shape_style, add_textbox, set_slide_title, insert_image, set_shape_text,
+ *   set_animation, set_background, set_slide_size
  * - 演示文稿管理Tools: create_presentation, open_presentation, close_presentation, get_open_presentations, switch_presentation, set_slide_theme, copy_slide, insert_slide_image
  */
 
@@ -78,6 +79,12 @@ export {
   insertImageHandler,
   setShapeTextDefinition,
   setShapeTextHandler,
+  setAnimationDefinition,
+  setAnimationHandler,
+  setBackgroundDefinition,
+  setBackgroundHandler,
+  setSlideSizeDefinition,
+  setSlideSizeHandler,
 } from './slide-ops';
 
 export {
