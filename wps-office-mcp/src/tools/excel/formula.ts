@@ -326,3 +326,15 @@ export const formulaTools: RegisteredTool[] = [
 ];
 
 export default formulaTools;
+
+server.tool("wps_excel_evaluate_formula", "计算并返回公式结果", { formula: z.string(), cell: z.string().optional() }, async (params) => {
+  return await callWps("evaluateFormula", params);
+});
+
+server.tool("wps_excel_set_print_area", "设置打印区域", { range: z.string() }, async (params) => {
+  return await callWps("setPrintArea", params);
+});
+
+server.tool("wps_excel_zoom", "设置工作表缩放比例", { percent: z.number() }, async (params) => {
+  return await callWps("setZoom", params);
+});
