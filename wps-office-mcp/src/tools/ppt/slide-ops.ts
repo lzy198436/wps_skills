@@ -24,6 +24,8 @@
  * - wps_ppt_set_animation: 设置元素动画
  * - wps_ppt_set_background: 设置幻灯片背景
  * - wps_ppt_set_slide_size: 设置幻灯片尺寸
+ * - wps_ppt_set_transition: 设置幻灯片切换效果
+ * - wps_ppt_add_chart: 在幻灯片中插入图表
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -1610,6 +1612,201 @@ export const setSlideSizeHandler: ToolHandler = async (
 };
 
 // ============================================================
+// 19. wps_ppt_set_transition - 设置幻灯片切换效果
+// ============================================================
+
+export const setTransitionDefinition: ToolDefinition = {
+  name: 'wps_ppt_set_transition',
+  description: `设置幻灯片切换效果。
+
+支持的切换类型：
+- fade: 淡出
+- push: 推入
+- wipe: 擦除
+- split: 拆分
+- reveal: 揭开
+- cover: 覆盖
+- dissolve: 溶解
+- curtains: 帷幕
+
+使用场景：
+- "给第2页设置淡出切换效果"
+- "设置幻灯片切换为推入"
+- "修改页面切换动画"`,
+  category: ToolCategory.PRESENTATION,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      slideIndex: {
+        type: 'number',
+        description: '幻灯片索引（从1开始）',
+      },
+      transition: {
+        type: 'string',
+        description: '切换效果类型，如 fade, push, wipe, split, reveal, cover, dissolve, curtains',
+      },
+    },
+    required: ['slideIndex', 'transition'],
+  },
+};
+
+export const setTransitionHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { slideIndex, transition } = args as {
+    slideIndex: number;
+    transition: string;
+  };
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+    }>(
+      'setTransition',
+      { slideIndex, transition },
+      WpsAppType.PRESENTATION
+    );
+
+    if (response.success) {
+      const transNameMap: Record<string, string> = {
+        fade: '淡出', push: '推入', wipe: '擦除', split: '拆分',
+        reveal: '揭开', cover: '覆盖', dissolve: '溶解', curtains: '帷幕',
+      };
+
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [
+          {
+            type: 'text',
+            text: `切换效果设置成功！\n幻灯片: 第 ${slideIndex} 页\n切换效果: ${transNameMap[transition] || transition}`,
+          },
+        ],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `设置切换效果失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `设置切换效果出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+// ============================================================
+// 20. wps_ppt_add_chart - 在幻灯片中插入图表
+// ============================================================
+
+export const addChartDefinition: ToolDefinition = {
+  name: 'wps_ppt_add_chart',
+  description: `在幻灯片中插入图表。
+
+支持的图表类型：
+- bar: 柱形图
+- line: 折线图
+- pie: 饼图
+- scatter: 散点图
+- area: 面积图
+- doughnut: 圆环图
+
+使用场景：
+- "在第1页插入一个柱形图"
+- "添加饼图展示数据"
+- "插入折线图显示趋势"`,
+  category: ToolCategory.PRESENTATION,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      slideIndex: {
+        type: 'number',
+        description: '幻灯片索引（从1开始）',
+      },
+      chartType: {
+        type: 'string',
+        description: '图表类型，如 bar, line, pie, scatter, area, doughnut',
+      },
+      data: {
+        type: 'array',
+        description: '图表数据数组，每项包含标签和数值',
+        items: {
+          type: 'object',
+          properties: {
+            label: { type: 'string', description: '数据标签' },
+            value: { type: 'number', description: '数据值' },
+          },
+        },
+      },
+    },
+    required: ['slideIndex', 'chartType', 'data'],
+  },
+};
+
+export const addChartHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { slideIndex, chartType, data } = args as {
+    slideIndex: number;
+    chartType: string;
+    data: Array<{ label: string; value: number }>;
+  };
+
+  try {
+    const response = await wpsClient.executeMethod<{
+      success: boolean;
+      message: string;
+      chartId?: string;
+    }>(
+      'addChart',
+      { slideIndex, chartType, data },
+      WpsAppType.PRESENTATION
+    );
+
+    if (response.success) {
+      const chartNameMap: Record<string, string> = {
+        bar: '柱形图', line: '折线图', pie: '饼图', scatter: '散点图',
+        area: '面积图', doughnut: '圆环图',
+      };
+
+      return {
+        id: uuidv4(),
+        success: true,
+        content: [
+          {
+            type: 'text',
+            text: `图表插入成功！\n幻灯片: 第 ${slideIndex} 页\n图表类型: ${chartNameMap[chartType] || chartType}\n数据点数: ${data.length}`,
+          },
+        ],
+      };
+    } else {
+      return {
+        id: uuidv4(),
+        success: false,
+        content: [{ type: 'text', text: `插入图表失败: ${response.error}` }],
+        error: response.error,
+      };
+    }
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return {
+      id: uuidv4(),
+      success: false,
+      content: [{ type: 'text', text: `插入图表出错: ${errMsg}` }],
+      error: errMsg,
+    };
+  }
+};
+
+// ============================================================
 // 导出所有幻灯片操作相关的Tools
 // ============================================================
 
@@ -1632,6 +1829,8 @@ export const slideOpsTools: RegisteredTool[] = [
   { definition: setAnimationDefinition, handler: setAnimationHandler },
   { definition: setBackgroundDefinition, handler: setBackgroundHandler },
   { definition: setSlideSizeDefinition, handler: setSlideSizeHandler },
+  { definition: setTransitionDefinition, handler: setTransitionHandler },
+  { definition: addChartDefinition, handler: addChartHandler },
 ];
 
 export default slideOpsTools;
