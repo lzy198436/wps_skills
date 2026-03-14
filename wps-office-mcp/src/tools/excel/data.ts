@@ -16,6 +16,8 @@
  * - wps_excel_add_comment: 给单元格添加批注
  * - wps_excel_protect_sheet: 保护/取消保护工作表
  * - wps_excel_set_conditional_format: 设置条件格式
+ * - wps_excel_protect_workbook: 保护/取消保护工作簿
+ * - wps_excel_set_zoom: 设置工作表缩放比例
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -651,6 +653,82 @@ export const setConditionalFormatHandler: ToolHandler = async (
 };
 
 /**
+ * 保护/取消保护工作簿
+ */
+export const protectWorkbookDefinition: ToolDefinition = {
+  name: 'wps_excel_protect_workbook',
+  description: '保护或取消保护工作簿，防止结构被修改（如添加/删除工作表）。',
+  category: ToolCategory.SPREADSHEET,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      password: { type: 'string', description: '保护密码' },
+      protect: { type: 'boolean', description: '是否保护，true为保护，false为取消保护' },
+    },
+    required: ['password', 'protect'],
+  },
+};
+
+export const protectWorkbookHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { password, protect } = args as { password: string; protect: boolean };
+  try {
+    const response = await wpsClient.executeMethod<{ message: string }>(
+      'protectWorkbook',
+      { password, protect },
+      WpsAppType.SPREADSHEET
+    );
+    if (!response.success) {
+      return { id: uuidv4(), success: false, content: [{ type: 'text', text: `${protect ? '保护' : '取消保护'}工作簿失败: ${response.error}` }], error: response.error };
+    }
+    return { id: uuidv4(), success: true, content: [{ type: 'text', text: `工作簿${protect ? '保护' : '取消保护'}成功！` }] };
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return { id: uuidv4(), success: false, content: [{ type: 'text', text: `${protect ? '保护' : '取消保护'}工作簿出错: ${errMsg}` }], error: errMsg };
+  }
+};
+
+/**
+ * 设置工作表缩放比例
+ */
+export const setZoomDefinition: ToolDefinition = {
+  name: 'wps_excel_set_zoom',
+  description: '设置当前工作表的缩放比例（10-400%）。',
+  category: ToolCategory.SPREADSHEET,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      percent: { type: 'number', description: '缩放百分比，范围10-400' },
+    },
+    required: ['percent'],
+  },
+};
+
+export const setZoomHandler: ToolHandler = async (
+  args: Record<string, unknown>
+): Promise<ToolCallResult> => {
+  const { percent } = args as { percent: number };
+  if (percent < 10 || percent > 400) {
+    return { id: uuidv4(), success: false, content: [{ type: 'text', text: '缩放比例必须在10-400之间' }], error: '缩放比例超出范围' };
+  }
+  try {
+    const response = await wpsClient.executeMethod<{ message: string }>(
+      'setZoom',
+      { percent },
+      WpsAppType.SPREADSHEET
+    );
+    if (!response.success) {
+      return { id: uuidv4(), success: false, content: [{ type: 'text', text: `设置缩放失败: ${response.error}` }], error: response.error };
+    }
+    return { id: uuidv4(), success: true, content: [{ type: 'text', text: `缩放比例已设置为${percent}%` }] };
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return { id: uuidv4(), success: false, content: [{ type: 'text', text: `设置缩放出错: ${errMsg}` }], error: errMsg };
+  }
+};
+
+/**
  * 导出所有数据处理相关的Tools
  */
 export const dataTools: RegisteredTool[] = [
@@ -664,6 +742,8 @@ export const dataTools: RegisteredTool[] = [
   { definition: addCommentDefinition, handler: addCommentHandler },
   { definition: protectSheetDefinition, handler: protectSheetHandler },
   { definition: setConditionalFormatDefinition, handler: setConditionalFormatHandler },
+  { definition: protectWorkbookDefinition, handler: protectWorkbookHandler },
+  { definition: setZoomDefinition, handler: setZoomHandler },
 ];
 
 export default dataTools;
