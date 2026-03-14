@@ -96,6 +96,13 @@ grep "claude-assistant" ~/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.ki
 3. 打开任意 Excel/Word/PPT 文档
 4. 在 WPS 顶部查看 "Claude助手" 选项卡，确认状态显示 "轮询中"
 
+### ⚠️ 已知问题
+
+**macOS 沙盒目录访问权限弹窗**
+- 现象：首次执行验证命令访问 `~/Library/Containers/com.kingsoft.wpsoffice.mac/...` 时，macOS 会弹出文件访问权限请求
+- 处理：点击「允许」即可，之后不再弹出
+- 影响：不影响安装结果，属正常 macOS 沙盒机制
+
 ---
 
 ## Windows 安装
