@@ -13,6 +13,8 @@ import { pivotTools } from './pivot';
 import { chartTools } from './chart';
 import { sheetTools } from './sheet';
 import { excelFormatTools } from './format';
+import { workbookTools } from './workbook';
+import { dataAdvancedTools } from './data-advanced';
 
 /**
  * 所有Excel相关的Tools
@@ -31,6 +33,8 @@ export const excelTools: RegisteredTool[] = [
   ...chartTools,
   ...sheetTools,
   ...excelFormatTools,
+  ...workbookTools,
+  ...dataAdvancedTools,
 ];
 
 // 分别导出，方便按需使用
@@ -40,6 +44,8 @@ export { pivotTools } from './pivot';
 export { chartTools } from './chart';
 export { sheetTools } from './sheet';
 export { excelFormatTools } from './format';
+export { workbookTools } from './workbook';
+export { dataAdvancedTools } from './data-advanced';
 
 // 导出单独的定义和处理器，方便测试
 export {

@@ -18,6 +18,7 @@ import { RegisteredTool } from '../../types/tools';
 import { slideTools } from './slide';
 import { slideOpsTools } from './slide-ops';
 import { presentationTools } from './presentation';
+import { textboxTools } from './textbox';
 
 /**
  * 所有PPT相关的Tools
@@ -31,12 +32,14 @@ export const pptTools: RegisteredTool[] = [
   ...slideTools,
   ...slideOpsTools,
   ...presentationTools,
+  ...textboxTools,
 ];
 
 // 分别导出，方便按需使用
 export { slideTools } from './slide';
 export { slideOpsTools } from './slide-ops';
 export { presentationTools } from './presentation';
+export { textboxTools } from './textbox';
 
 // 导出单独的定义和处理器，方便测试
 export {
