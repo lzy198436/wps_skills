@@ -147,6 +147,8 @@ build_mcp_server() {
             npm install
         fi
 
+        echo "清理旧编译产物..."
+        rm -rf dist
         echo "构建项目..."
         npm run build
 

@@ -290,7 +290,9 @@ install_mcp_server_dependencies() {
     fi
     success "MCP Server 依赖安装完成"
 
-    # 第二步：编译 TypeScript
+    # 第二步：清理旧编译产物后编译 TypeScript（防止过期 dist 导致工具重复注册）
+    echo "  清理旧编译产物..."
+    rm -rf dist
     echo "  编译 TypeScript..."
     if ! npm run build; then
         error "TypeScript 编译失败"
@@ -371,8 +373,9 @@ copy_wps_addon_linux() {
     fi
 
     # WPS 加载项目标目录 (Linux)
+    # 注意：目录名必须以 _ 结尾，这是 WPS jsaddons 的约定
     local wps_addons_path="$HOME/.local/share/Kingsoft/wps/jsaddons"
-    local addon_target="$wps_addons_path/wps-claude-addon"
+    local addon_target="$wps_addons_path/claude-assistant_"
 
     # 创建目标目录（如果不存在）
     if [ ! -d "$wps_addons_path" ]; then
@@ -559,13 +562,22 @@ main() {
 # 注册加载项到 WPS 的插件清单中
 # ============================================================================
 update_publish_xml() {
-    if [ "$OS" != "macos" ]; then
-        return 0
-    fi
-
     info "更新 publish.xml 配置..."
 
-    local wps_addons_path="$HOME/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsaddons"
+    local wps_addons_path=""
+    case $OS in
+        macos)
+            wps_addons_path="$HOME/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsaddons"
+            ;;
+        linux)
+            wps_addons_path="$HOME/.local/share/Kingsoft/wps/jsaddons"
+            ;;
+        *)
+            warn "当前系统不支持 publish.xml 自动更新"
+            return 0
+            ;;
+    esac
+
     local publish_xml="$wps_addons_path/publish.xml"
 
     if [ ! -d "$wps_addons_path" ]; then

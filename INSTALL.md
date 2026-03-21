@@ -105,6 +105,96 @@ grep "claude-assistant" ~/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.ki
 
 ---
 
+## Linux 安装
+
+### Step 1: 检测前置条件
+
+```bash
+# 检测操作系统（必须是 Linux）
+uname -s
+
+# 检测 WPS Office 是否已安装
+which wps || ls /opt/kingsoft/wps-office
+
+# 检测 Node.js 版本（必须 >= 18.0.0）
+node -v
+```
+
+**如果前置条件不满足**：
+- WPS Office 不存在 -> 告知用户安装：https://linux.wps.cn
+- Node.js 不存在或版本 < 18 -> 告知用户安装：https://nodejs.org/
+
+### Step 2: 手动安装
+
+```bash
+# 进入项目根目录
+cd <项目根目录>
+
+# 安装依赖并编译
+cd wps-office-mcp
+npm install
+rm -rf dist
+npm run build
+cd ..
+
+# 复制加载项到 WPS 目录（目录名必须以 _ 结尾）
+mkdir -p ~/.local/share/Kingsoft/wps/jsaddons
+cp -R wps-claude-assistant ~/.local/share/Kingsoft/wps/jsaddons/claude-assistant_
+
+# 创建 publish.xml
+cat > ~/.local/share/Kingsoft/wps/jsaddons/publish.xml << 'EOF'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jsplugins>
+  <jsplugin name="claude-assistant" type="wps,et,wpp" url="claude-assistant_/" enable="enable_dev"/>
+</jsplugins>
+EOF
+
+# 注册 MCP Server
+claude mcp add wps-office node $(pwd)/wps-office-mcp/dist/index.js
+
+# 注册 Skills
+mkdir -p ~/.claude/skills
+ln -sf $(pwd)/skills/wps-excel ~/.claude/skills/wps-excel
+ln -sf $(pwd)/skills/wps-word ~/.claude/skills/wps-word
+ln -sf $(pwd)/skills/wps-ppt ~/.claude/skills/wps-ppt
+ln -sf $(pwd)/skills/wps-office ~/.claude/skills/wps-office
+```
+
+### Step 3: 安装后验证
+
+```bash
+# 1. MCP Server 已注册
+claude mcp list
+
+# 2. Skills 已注册
+ls ~/.claude/skills/
+
+# 3. 编译产物存在
+ls wps-office-mcp/dist/index.js
+
+# 4. WPS 加载项已安装（目录名以 _ 结尾）
+ls ~/.local/share/Kingsoft/wps/jsaddons/claude-assistant_/
+
+# 5. publish.xml 已注册
+grep "claude-assistant" ~/.local/share/Kingsoft/wps/jsaddons/publish.xml
+```
+
+### Step 4: 告知用户
+
+1. **重启 Claude Code**（必须！）
+2. 重启 WPS Office
+3. 打开任意文档，查看 "Claude助手" 选项卡
+
+### Linux 关键路径参考
+
+| 项目 | 路径 |
+|------|------|
+| WPS 加载项基础目录 | `~/.local/share/Kingsoft/wps/jsaddons/` |
+| 加载项安装目录 | `<基础目录>/claude-assistant_/`（尾部 `_` 必须） |
+| publish.xml | `<基础目录>/publish.xml` |
+
+---
+
 ## Windows 安装
 
 ### Step 1: 检测前置条件
@@ -292,4 +382,111 @@ mkdir -p ~/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsad
 
 # 修复权限
 chmod -R 755 ~/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsaddons
+```
+
+---
+
+## 已知问题与故障排除（GitHub Issues）
+
+### Issue #6: MCP 连接失败（"Failed to connect"）
+
+**现象**：`claude mcp list` 显示 `wps-office: Failed to connect`。
+
+**根因**：dist 目录中的编译产物过期，存在工具名称重复注册导致 MCP Server 启动即崩溃。
+
+**解决方案**：
+```bash
+cd wps-office-mcp
+# 清除旧编译产物后重新编译（关键步骤！）
+rm -rf dist
+npm run build
+# 验证启动是否正常（应看到 "Server started successfully"）
+node dist/index.js 2>&1 | head -5
+# Ctrl+C 退出
+```
+
+如果仍然失败，完整重建：
+```bash
+cd wps-office-mcp
+rm -rf dist node_modules
+npm install
+npm run build
+```
+
+然后重新注册 MCP：
+```bash
+claude mcp remove wps-office
+claude mcp add wps-office node <项目绝对路径>/wps-office-mcp/dist/index.js
+```
+
+### Issue #5: Linux 平台 WPS 找不到加载项
+
+**现象**：Linux（如 ArchLinux）安装成功但 WPS 中看不到 Claude 助手选项卡。
+
+**根因**：安装脚本中 Linux 加载项目录名缺少尾部 `_` 后缀，且未更新 publish.xml。WPS jsaddons 规范要求目录名以 `_` 结尾才能被识别。
+
+**解决方案**：
+```bash
+# 1. 检查当前安装路径（错误的旧路径）
+ls ~/.local/share/Kingsoft/wps/jsaddons/wps-claude-addon 2>/dev/null
+
+# 2. 如果存在旧目录，删除并重新安装
+rm -rf ~/.local/share/Kingsoft/wps/jsaddons/wps-claude-addon
+
+# 3. 手动复制到正确路径（目录名必须以 _ 结尾）
+cp -R <项目根目录>/wps-claude-assistant ~/.local/share/Kingsoft/wps/jsaddons/claude-assistant_
+
+# 4. 创建 publish.xml（Linux 上也需要）
+cat > ~/.local/share/Kingsoft/wps/jsaddons/publish.xml << 'EOF'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jsplugins>
+  <jsplugin name="claude-assistant" type="wps,et,wpp" url="claude-assistant_/" enable="enable_dev"/>
+</jsplugins>
+EOF
+
+# 5. 重启 WPS
+pkill -f wps
+# 然后重新打开 WPS
+```
+
+**注意**：不同 Linux 发行版 WPS 加载项目录可能不同。已知路径：
+- 通用：`~/.local/share/Kingsoft/wps/jsaddons/`
+- 部分发行版：`~/.kingsoft/wps/jsaddons/`
+
+如果以上路径都不生效，可通过以下方式查找：
+```bash
+find / -path "*/Kingsoft/wps/jsaddons" -type d 2>/dev/null
+find / -path "*kingsoft/wps/jsaddons" -type d 2>/dev/null
+```
+
+### Issue #4: WPS 加载项启动报 "arguments error"
+
+**现象**：WPS 弹出 `ERROR: arguments error at <anonymous>:1:89`。
+
+**根因**：manifest.xml 中缺少 `<ribbon>` 和 `<scripts>` 标签声明，导致 WPS 无法正确解析加载项入口。
+
+**解决方案**：
+
+已修复 `wps-claude-assistant/manifest.xml`，确保包含完整的 ribbon 和 scripts 声明。如果仍遇到此错误：
+
+```bash
+# 1. 检查 manifest.xml 是否包含 ribbon 和 scripts 声明
+grep -E "ribbon|scripts" <加载项安装目录>/manifest.xml
+# 应看到类似：
+#   <ribbon src="ribbon.xml"/>
+#   <script src="main.js"/>
+
+# 2. 确认 ribbon.xml 和 main.js 文件存在
+ls <加载项安装目录>/ribbon.xml
+ls <加载项安装目录>/main.js
+
+# 3. 重新复制加载项（使用最新版本）
+# macOS:
+rm -rf ~/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsaddons/claude-assistant_
+cp -R <项目根目录>/wps-claude-assistant ~/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsaddons/claude-assistant_
+
+# 4. 重启 WPS
+pkill -f wpsoffice
+sleep 2
+open /Applications/wpsoffice.app
 ```
