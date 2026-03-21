@@ -10,6 +10,8 @@ WPS接口API/
 /scripts/
 /logs/
 planplan.md
+**/tests/
+**/test/
 **/README.md
 !README.md
 
