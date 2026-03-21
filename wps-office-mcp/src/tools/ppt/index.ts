@@ -95,6 +95,10 @@ export {
   beautifyHandler,
   unifyFontDefinition,
   unifyFontHandler,
+  alignObjectsDefinition,
+  alignObjectsHandler,
+  setFontColorDefinition,
+  setFontColorHandler,
 } from './slide';
 
 export {
@@ -134,6 +138,14 @@ export {
   setBackgroundHandler,
   setSlideSizeDefinition,
   setSlideSizeHandler,
+  addChartDefinition,
+  addChartHandler,
+  addSpeakerNotesDefinition,
+  addSpeakerNotesHandler,
+  setShapeFillDefinition,
+  setShapeFillHandler,
+  setTransitionDefinition,
+  setTransitionHandler,
 } from './slide-ops';
 
 export {

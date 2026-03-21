@@ -56,6 +56,14 @@ export {
   getActiveDocumentHandler,
   insertImageDefinition,
   insertImageHandler,
+  insertPageBreakDefinition,
+  insertPageBreakHandler,
+  setFontStyleDefinition,
+  setFontStyleHandler,
+  insertCommentDefinition,
+  insertCommentHandler,
+  setTextColorDefinition,
+  setTextColorHandler,
 } from './content';
 
 export {
@@ -73,6 +81,10 @@ export {
   insertFooterHandler,
   generateDocTocDefinition,
   generateDocTocHandler,
+  insertSectionBreakDefinition,
+  insertSectionBreakHandler,
+  setLineSpacingDefinition,
+  setLineSpacingHandler,
 } from './document';
 
 export default wordTools;

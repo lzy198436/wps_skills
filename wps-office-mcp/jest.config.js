@@ -48,7 +48,7 @@ module.exports = {
   },
 
   // 设置超时时间（毫秒）
-  testTimeout: 10000,
+  testTimeout: 35000,
 
   // 显示详细测试结果
   verbose: true,

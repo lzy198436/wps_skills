@@ -63,6 +63,12 @@ export {
   generateFormulaHandler,
   diagnoseFormulaDefinition,
   diagnoseFormulaHandler,
+  evaluateFormulaDefinition,
+  evaluateFormulaHandler,
+  setPrintAreaDefinition,
+  setPrintAreaHandler,
+  zoomDefinition,
+  zoomHandler,
 } from './formula';
 
 export {
@@ -86,6 +92,10 @@ export {
   protectSheetHandler,
   setConditionalFormatDefinition,
   setConditionalFormatHandler,
+  protectWorkbookDefinition,
+  protectWorkbookHandler,
+  setZoomDefinition,
+  setZoomHandler,
 } from './data';
 
 export {
@@ -131,6 +141,10 @@ export {
   autoFillHandler,
   setNamedRangeDefinition,
   setNamedRangeHandler,
+  autoSumDefinition,
+  autoSumHandler,
+  hideColumnDefinition,
+  hideColumnHandler,
 } from './sheet';
 
 export {
@@ -150,6 +164,10 @@ export {
   setColumnWidthHandler,
   setRowHeightDefinition,
   setRowHeightHandler,
+  hideRowDefinition,
+  hideRowHandler,
+  setDataValidationDefinition,
+  setDataValidationHandler,
 } from './format';
 
 export {
