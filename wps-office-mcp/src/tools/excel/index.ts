@@ -15,6 +15,8 @@ import { sheetTools } from './sheet';
 import { excelFormatTools } from './format';
 import { workbookTools } from './workbook';
 import { dataAdvancedTools } from './data-advanced';
+import { rowColumnTools } from './row-column';
+import { commentProtectTools } from './comment-protect';
 
 /**
  * 所有Excel相关的Tools
@@ -25,6 +27,8 @@ import { dataAdvancedTools } from './data-advanced';
  * - 图表Tools: create_chart, update_chart
  * - 工作表Tools: create_sheet, delete_sheet, rename_sheet, copy_sheet, get_sheet_list, switch_sheet, move_sheet, get_selection, delete_row, insert_column, delete_column, freeze_panes, auto_fill, set_named_range
  * - 格式化Tools: set_cell_format, set_cell_style, set_border, set_number_format, merge_cells, unmerge_cells, set_column_width, set_row_height
+ * - 行列Tools: insert_rows, insert_columns, delete_rows, delete_columns, hide_rows, show_rows, show_columns, group_rows
+ * - 批注保护Tools: delete_cell_comment, get_cell_comments, unprotect_sheet, lock_cells, set_array_formula, insert_excel_image, set_hyperlink
  */
 export const excelTools: RegisteredTool[] = [
   ...formulaTools,
@@ -35,6 +39,8 @@ export const excelTools: RegisteredTool[] = [
   ...excelFormatTools,
   ...workbookTools,
   ...dataAdvancedTools,
+  ...rowColumnTools,
+  ...commentProtectTools,
 ];
 
 // 分别导出，方便按需使用
@@ -46,6 +52,8 @@ export { sheetTools } from './sheet';
 export { excelFormatTools } from './format';
 export { workbookTools } from './workbook';
 export { dataAdvancedTools } from './data-advanced';
+export { rowColumnTools } from './row-column';
+export { commentProtectTools } from './comment-protect';
 
 // 导出单独的定义和处理器，方便测试
 export {
@@ -183,5 +191,41 @@ export {
   subtotalDefinition,
   subtotalHandler,
 } from './data-advanced';
+
+export {
+  insertRowsDefinition,
+  insertRowsHandler,
+  insertColumnsDefinition,
+  insertColumnsHandler,
+  deleteRowsDefinition,
+  deleteRowsHandler,
+  deleteColumnsDefinition,
+  deleteColumnsHandler,
+  hideRowsDefinition,
+  hideRowsHandler,
+  showRowsDefinition,
+  showRowsHandler,
+  showColumnsDefinition,
+  showColumnsHandler,
+  groupRowsDefinition,
+  groupRowsHandler,
+} from './row-column';
+
+export {
+  deleteCellCommentDefinition,
+  deleteCellCommentHandler,
+  getCellCommentsDefinition,
+  getCellCommentsHandler,
+  unprotectSheetDefinition,
+  unprotectSheetHandler,
+  lockCellsDefinition,
+  lockCellsHandler,
+  setArrayFormulaDefinition,
+  setArrayFormulaHandler,
+  insertExcelImageDefinition,
+  insertExcelImageHandler,
+  setHyperlinkDefinition,
+  setHyperlinkHandler,
+} from './comment-protect';
 
 export default excelTools;
