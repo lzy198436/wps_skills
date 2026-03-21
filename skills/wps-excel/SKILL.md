@@ -202,129 +202,139 @@ description: WPS 表格智能助手，通过自然语言操控 Excel，解决公
 
 ## 可用MCP工具
 
-本Skill通过以下已注册MCP工具与WPS Office交互（共65个）：
+本Skill通过以下已注册MCP工具与WPS Office交互（共80个）：
 
 ### 工作簿管理工具（10个）
 
-| MCP工具 | 功能描述 | 关键参数 |
-|---------|---------|----------|
-| `wps_excel_open_workbook` | 打开指定路径的工作簿 | filePath |
-| `wps_excel_get_open_workbooks` | 获取所有已打开的工作簿列表 | （无参数） |
-| `wps_excel_switch_workbook` | 切换到指定工作簿 | name |
-| `wps_excel_close_workbook` | 关闭指定工作簿 | name?, save? |
-| `wps_excel_create_workbook` | 新建空白工作簿 | （无参数） |
-| `wps_excel_get_cell_value` | 获取指定单元格的值 | cell, sheet? |
-| `wps_excel_set_cell_value` | 设置指定单元格的值 | cell, value, sheet? |
-| `wps_excel_get_formula` | 获取单元格中的公式 | cell, sheet? |
-| `wps_excel_get_cell_info` | 获取单元格详细信息（值/格式/公式等） | cell, sheet? |
-| `wps_excel_clear_range` | 清除指定范围的内容 | range, sheet? |
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_open_workbook` | 打开指定路径的Excel工作簿文件 |
+| `wps_excel_get_open_workbooks` | 获取当前所有已打开的Excel工作簿列表 |
+| `wps_excel_switch_workbook` | 切换到指定名称的Excel工作簿 |
+| `wps_excel_close_workbook` | 关闭指定的Excel工作簿，可选是否保存 |
+| `wps_excel_create_workbook` | 新建一个空白Excel工作簿 |
+| `wps_excel_get_cell_value` | 获取Excel指定单元格的值 |
+| `wps_excel_set_cell_value` | 设置Excel指定单元格的值 |
+| `wps_excel_get_formula` | 获取Excel指定单元格的公式 |
+| `wps_excel_get_cell_info` | 获取单元格的详细信息（值、公式、格式等） |
+| `wps_excel_clear_range` | 清除指定范围的内容、格式或全部 |
 
 ### 公式工具（6个）
 
-| MCP工具 | 功能描述 | 关键参数 |
-|---------|---------|----------|
-| `wps_excel_set_formula` | 在指定单元格设置公式（必须以=开头） | range, formula, sheet? |
-| `wps_excel_generate_formula` | 根据自然语言生成公式，自动获取工作表上下文 | description, target_cell? |
-| `wps_excel_diagnose_formula` | 诊断公式错误，分析原因并提供修复建议 | cell |
-| `wps_excel_evaluate_formula` | 计算并返回公式的结果值 | formula, sheet? |
-| `wps_excel_set_print_area` | 设置工作表的打印区域 | range, sheet? |
-| `wps_excel_zoom` | 设置工作表缩放比例 | level, sheet? |
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_set_formula` | 在指定单元格设置Excel公式（必须以=开头） |
+| `wps_excel_generate_formula` | 根据自然语言描述生成Excel公式 |
+| `wps_excel_diagnose_formula` | 诊断公式错误，分析原因并提供修复建议 |
+| `wps_excel_evaluate_formula` | 计算并返回公式结果 |
+| `wps_excel_set_print_area` | 设置打印区域 |
+| `wps_excel_zoom` | 设置工作表缩放比例 |
 
-### 数据工具（12个）
+### 数据处理工具（12个）
 
-| MCP工具 | 功能描述 | 关键参数 |
-|---------|---------|----------|
-| `wps_excel_read_range` | 读取指定范围的单元格数据 | range, sheet?, include_header? |
-| `wps_excel_write_range` | 向指定范围写入二维数组数据 | range, data, sheet? |
-| `wps_excel_clean_data` | 数据清洗（trim/remove_duplicates/unify_date/remove_empty_rows） | range, operations, sheet? |
-| `wps_excel_remove_duplicates` | 删除指定范围内的重复行 | range, columns?, has_header?, sheet? |
-| `wps_excel_sort_range` | 对指定范围进行排序 | range, column, order?, sheet? |
-| `wps_excel_find_replace` | 在工作表中查找和替换内容 | find, replace?, range?, sheet? |
-| `wps_excel_insert_row` | 在指定位置插入行 | row, count?, sheet? |
-| `wps_excel_add_comment` | 为单元格添加批注 | cell, comment, sheet? |
-| `wps_excel_protect_sheet` | 保护工作表（防止编辑） | password?, sheet? |
-| `wps_excel_set_conditional_format` | 设置条件格式规则 | range, rule, format, sheet? |
-| `wps_excel_protect_workbook` | 保护工作簿结构（防止增删工作表） | password? |
-| `wps_excel_set_zoom` | 设置工作表显示缩放比例 | level, sheet? |
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_read_range` | 读取Excel指定范围的单元格数据 |
+| `wps_excel_write_range` | 向Excel指定范围写入二维数组数据 |
+| `wps_excel_clean_data` | 数据清洗工具，支持多种清洗操作的组合 |
+| `wps_excel_remove_duplicates` | 删除指定范围内的重复行 |
+| `wps_excel_sort_range` | 对Excel选定区域按指定列排序 |
+| `wps_excel_find_replace` | 在Excel中查找并替换内容 |
+| `wps_excel_insert_row` | 在Excel中插入行 |
+| `wps_excel_add_comment` | 给单元格添加批注 |
+| `wps_excel_protect_sheet` | 保护或取消保护工作表 |
+| `wps_excel_set_conditional_format` | 设置条件格式 |
+| `wps_excel_protect_workbook` | 保护或取消保护工作簿，防止结构被修改 |
+| `wps_excel_set_zoom` | 设置当前工作表的缩放比例（10-400%） |
 
-### 数据高级工具（7个）
+### 高级数据工具（7个）
 
-| MCP工具 | 功能描述 | 关键参数 |
-|---------|---------|----------|
-| `wps_excel_auto_filter` | 设置自动筛选 | range, column?, criteria?, sheet? |
-| `wps_excel_copy_range` | 复制指定范围到目标位置 | source, destination, sheet? |
-| `wps_excel_paste_range` | 粘贴数据到指定位置 | destination, type?, sheet? |
-| `wps_excel_fill_series` | 自动填充序列（等差/等比/日期等） | range, type?, step?, sheet? |
-| `wps_excel_transpose` | 转置指定范围的数据（行列互换） | source, destination, sheet? |
-| `wps_excel_text_to_columns` | 分列（将文本按分隔符拆分为多列） | range, delimiter?, sheet? |
-| `wps_excel_subtotal` | 对指定范围进行分类汇总 | range, groupBy, function?, sheet? |
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_auto_filter` | 对Excel指定范围应用自动筛选 |
+| `wps_excel_copy_range` | 复制Excel指定范围到目标位置 |
+| `wps_excel_paste_range` | 粘贴已复制的内容到指定位置 |
+| `wps_excel_fill_series` | 自动填充序列数据 |
+| `wps_excel_transpose` | 转置数据（行列互换） |
+| `wps_excel_text_to_columns` | 将文本按分隔符拆分到多列 |
+| `wps_excel_subtotal` | 创建分类汇总 |
 
 ### 图表工具（2个）
 
-| MCP工具 | 功能描述 | 关键参数 |
-|---------|---------|----------|
-| `wps_excel_create_chart` | 创建图表（柱状图/折线图/饼图/散点图等） | data_range, chart_type?, title?, position?, sheet? |
-| `wps_excel_update_chart` | 更新图表属性（标题/颜色/图例等） | chart_index/chart_name, title?, chart_type?, show_legend?, colors? |
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_create_chart` | 在Excel中创建图表（柱状图/折线图/饼图/散点图等） |
+| `wps_excel_update_chart` | 更新Excel图表的属性（标题/颜色/图例/数据标签等） |
 
 支持的图表类型：column_clustered, column_stacked, bar_clustered, line, line_markers, pie, doughnut, scatter, area, radar
 
 ### 透视表工具（2个）
 
-| MCP工具 | 功能描述 | 关键参数 |
-|---------|---------|----------|
-| `wps_excel_create_pivot_table` | 创建数据透视表 | sourceRange, destinationCell, rowFields, valueFields, columnFields?, filterFields? |
-| `wps_excel_update_pivot_table` | 更新透视表配置（添加/移除字段、刷新） | pivotTableName/pivotTableCell, add/removeRowFields, refresh? |
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_create_pivot_table` | 创建Excel透视表，用于数据汇总和分析 |
+| `wps_excel_update_pivot_table` | 更新已有透视表的配置（添加/移除字段、修改聚合方式等） |
 
 ### 工作表管理工具（16个）
 
-| MCP工具 | 功能描述 | 关键参数 |
-|---------|---------|----------|
-| `wps_excel_create_sheet` | 创建新工作表 | name, position? |
-| `wps_excel_delete_sheet` | 删除指定工作表（不可撤销） | name |
-| `wps_excel_rename_sheet` | 重命名工作表 | oldName, newName |
-| `wps_excel_copy_sheet` | 复制工作表 | name, newName?, position? |
-| `wps_excel_get_sheet_list` | 获取工作表列表 | （无参数） |
-| `wps_excel_switch_sheet` | 切换到指定工作表 | name |
-| `wps_excel_move_sheet` | 移动工作表到指定位置 | name, position |
-| `wps_excel_get_selection` | 获取当前选中区域信息 | （无参数） |
-| `wps_excel_delete_row` | 删除指定行 | row, count?, sheet? |
-| `wps_excel_insert_column` | 在指定位置插入列 | column, count?, sheet? |
-| `wps_excel_delete_column` | 删除指定列 | column, count?, sheet? |
-| `wps_excel_freeze_panes` | 冻结窗格 | cell, sheet? |
-| `wps_excel_auto_fill` | 自动填充序列 | source, destination, sheet? |
-| `wps_excel_set_named_range` | 创建或更新命名范围 | name, range, sheet? |
-| `wps_excel_hide_column` | 隐藏指定列 | column, sheet? |
-| `wps_excel_auto_sum` | 对指定范围自动求和 | range, target?, sheet? |
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_create_sheet` | 在当前工作簿中创建新的工作表 |
+| `wps_excel_delete_sheet` | 删除当前工作簿中的指定工作表（不可撤销） |
+| `wps_excel_rename_sheet` | 重命名当前工作簿中的指定工作表 |
+| `wps_excel_copy_sheet` | 复制当前工作簿中的指定工作表 |
+| `wps_excel_get_sheet_list` | 获取当前工作簿的所有工作表列表 |
+| `wps_excel_switch_sheet` | 切换到指定的工作表 |
+| `wps_excel_move_sheet` | 移动指定工作表到新的位置 |
+| `wps_excel_get_selection` | 获取当前Excel中选中区域的信息 |
+| `wps_excel_delete_row` | 删除指定行（可指定起始行号和删除行数） |
+| `wps_excel_insert_column` | 在指定位置插入列（可指定起始列号和插入列数） |
+| `wps_excel_delete_column` | 删除指定列（可指定起始列号和删除列数） |
+| `wps_excel_freeze_panes` | 冻结/取消冻结窗格 |
+| `wps_excel_auto_fill` | 自动填充单元格区域（根据源区域数据模式自动填充） |
+| `wps_excel_set_named_range` | 设置命名范围（为指定单元格区域创建或更新命名范围） |
+| `wps_excel_hide_column` | 隐藏或显示指定列 |
+| `wps_excel_auto_sum` | 对指定范围的列或行自动求和 |
 
 ### 格式化工具（10个）
 
-| MCP工具 | 功能描述 | 关键参数 |
-|---------|---------|----------|
-| `wps_excel_set_cell_format` | 设置单元格格式（字体/颜色/对齐等） | range, format{bold,italic,fontSize,...}, sheet? |
-| `wps_excel_set_cell_style` | 应用预定义样式（标题/强调等） | range, style, sheet? |
-| `wps_excel_set_border` | 设置单元格边框 | range, borderStyle(thin/medium/thick/double/none), position?, color? |
-| `wps_excel_set_number_format` | 设置数字格式 | range, format(如 #,##0.00), sheet? |
-| `wps_excel_merge_cells` | 合并单元格 | range, sheet? |
-| `wps_excel_unmerge_cells` | 拆分已合并的单元格 | range, sheet? |
-| `wps_excel_set_column_width` | 设置列宽 | column, width, sheet? |
-| `wps_excel_set_row_height` | 设置行高 | row, height, sheet? |
-| `wps_excel_hide_row` | 隐藏指定行 | row, sheet? |
-| `wps_excel_set_data_validation` | 设置数据验证规则 | range, type, formula?, sheet? |
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_set_cell_format` | 设置Excel单元格格式（字体/颜色/背景色/粗体/斜体/字号等） |
+| `wps_excel_set_cell_style` | 应用预定义样式到Excel单元格（标题/强调/输入/输出等） |
+| `wps_excel_set_border` | 设置Excel单元格边框样式（支持不同粗细、位置和颜色） |
+| `wps_excel_set_number_format` | 设置Excel单元格的数字格式 |
+| `wps_excel_merge_cells` | 合并Excel指定范围的单元格 |
+| `wps_excel_unmerge_cells` | 拆分Excel中已合并的单元格 |
+| `wps_excel_set_column_width` | 设置Excel指定列的列宽（支持单列或连续多列） |
+| `wps_excel_set_row_height` | 设置Excel指定行的行高 |
+| `wps_excel_hide_row` | 隐藏或显示Excel指定行（可一次操作连续多行） |
+| `wps_excel_set_data_validation` | 设置Excel单元格的数据验证规则（下拉列表/数值范围/日期范围等） |
 
-### macOS handler已支持但尚未注册为MCP工具的action
+### 行列工具（8个）
 
-以下action已在macOS handler（main.js）中实现，后续将逐步注册为独立MCP工具：
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_insert_rows` | 在Excel中指定位置插入一行或多行 |
+| `wps_excel_insert_columns` | 在Excel中指定位置插入一列或多列 |
+| `wps_excel_delete_rows` | 删除Excel中指定位置的一行或多行 |
+| `wps_excel_delete_columns` | 删除Excel中指定位置的一列或多列 |
+| `wps_excel_hide_rows` | 隐藏Excel中指定范围的行 |
+| `wps_excel_show_rows` | 显示Excel中已隐藏的行 |
+| `wps_excel_show_columns` | 显示Excel中已隐藏的列 |
+| `wps_excel_group_rows` | 对Excel中指定范围的行进行分组（便于折叠/展开管理） |
 
-| 分类 | action列表 |
-|------|-----------|
-| 行列操作 | showRows, showColumns |
-| 条件格式 | removeConditionalFormat, getConditionalFormats |
-| 数据验证 | removeDataValidation, getDataValidations |
-| 命名范围 | deleteNamedRange, getNamedRanges |
-| 批注 | deleteCellComment, getCellComments |
-| 保护 | unprotectSheet |
-| 格式辅助 | autoFitColumn, autoFitRow, autoFitAll, unfreezePanes, copyFormat, clearFormats |
-| 高级功能 | refreshLinks, consolidate, setArrayFormula, calculateSheet, insertExcelImage, setHyperlink, wrapText, groupRows, groupColumns, lockCells |
+### 批注保护工具（7个）
+
+| MCP工具 | 功能描述 |
+|---------|---------|
+| `wps_excel_delete_cell_comment` | 删除Excel单元格上的批注 |
+| `wps_excel_get_cell_comments` | 获取Excel指定范围内的所有批注 |
+| `wps_excel_unprotect_sheet` | 取消保护当前工作表 |
+| `wps_excel_lock_cells` | 锁定或解锁Excel指定范围的单元格（需配合工作表保护使用） |
+| `wps_excel_set_array_formula` | 为Excel指定范围设置数组公式（CSE数组公式） |
+| `wps_excel_insert_excel_image` | 在Excel中插入图片到指定位置 |
+| `wps_excel_set_hyperlink` | 为Excel单元格设置超链接 |
 
 ### 调用示例
 
@@ -364,4 +374,4 @@ wps_excel_get_sheet_list()
 
 *Skill by lc2panda - WPS MCP Project*
 
-<!-- 审计记录：2026-03-21 T17 同步工具列表 46→65个MCP工具（+工作簿管理10个、+数据高级7个、+protect_workbook/set_zoom） -->
+<!-- 审计记录：2026-03-21 T18 同步工具列表 65→80个MCP工具（+行列工具8个、+批注保护工具7个，与代码100%同步） -->

@@ -284,55 +284,72 @@ ELSE:
 
 ## 可用工具列表
 
-全平台共计 **133个** 已注册MCP工具（Excel 65 + Word 24 + PPT 42 + 通用 2）。
+全平台共计 **224个** 已注册MCP工具（Excel 80 + Word 24 + PPT 111 + 通用 9）。
 
-### 格式转换工具（2个）
+### 通用工具（9个）
 
 | 工具名称 | 功能描述 |
 |---------|---------|
 | `wps_convert_to_pdf` | 将当前文档转换为PDF格式（支持Word/Excel/PPT） |
 | `wps_convert_format` | 将当前文档转换为其他格式（doc/xlsx/ppt/rtf/csv/html等） |
+| `wps_common_save` | 保存当前文档 |
+| `wps_common_save_as` | 将当前文档另存为指定路径和格式 |
+| `wps_common_ping` | 检测WPS应用连接状态 |
+| `wps_common_wire_check` | 检查与WPS加载项之间的通信线路状态 |
+| `wps_common_get_app_info` | 获取WPS应用的基本信息 |
+| `wps_common_get_selected_text` | 获取当前文档中选中的文本内容 |
+| `wps_common_set_selected_text` | 替换当前文档中选中的文本内容 |
 
-### Excel 专项工具（65个，详见 /wps-excel Skill）
+### Excel 专项工具（80个，详见 /wps-excel Skill）
 
 | 分类 | 工具数 | 关键工具 |
 |-----|-------|---------|
 | 工作簿管理 | 10 | open/create/close/switch_workbook, get/set_cell_value, get_formula, get_cell_info, clear_range |
 | 公式 | 6 | set/generate/diagnose/evaluate_formula, set_print_area, zoom |
-| 数据读写 | 12 | read/write_range, clean_data, sort_range, find_replace, insert_row, protect_sheet/workbook 等 |
-| 数据高级 | 7 | auto_filter, copy/paste_range, fill_series, transpose, text_to_columns, subtotal |
+| 数据处理 | 12 | read/write_range, clean_data, sort_range, find_replace, protect_sheet/workbook 等 |
+| 高级数据 | 7 | auto_filter, copy/paste_range, fill_series, transpose, text_to_columns, subtotal |
 | 图表 | 2 | create/update_chart |
 | 透视表 | 2 | create/update_pivot_table |
 | 工作表管理 | 16 | create/delete/rename/copy/move/switch_sheet, freeze_panes, auto_fill, hide_column, auto_sum 等 |
 | 格式化 | 10 | set_cell_format/style, set_border, merge/unmerge_cells, set_column_width/row_height 等 |
+| 行列 | 8 | insert/delete_rows/columns, hide/show_rows/columns, group_rows |
+| 批注保护 | 7 | delete_cell_comment, get_cell_comments, unprotect_sheet, lock_cells, set_array_formula, insert_excel_image, set_hyperlink |
 
 ### Word 专项工具（24个，详见 /wps-word Skill）
 
 | 分类 | 工具数 | 关键工具 |
 |-----|-------|---------|
-| 文档管理 | 5 | get_open_documents, switch/open_document, get_document_text, get_active_document |
-| 内容操作 | 7 | insert_text, find_replace, insert_table/image/comment/page_break/bookmark |
-| 格式设置 | 8 | set_font, apply_style, set_paragraph, set_font_style, set_text_color, set_line_spacing, generate_toc/doc_toc |
-| 页面布局 | 4 | set_page_setup, insert_header/footer/section_break |
+| 格式化 | 5 | set_font, apply_style, set_font_style, set_text_color, set_line_spacing |
+| 内容 | 10 | insert_text, find_replace, insert_table/image/comment/page_break/bookmark/section_break, set_paragraph, set_page_setup |
+| 文档管理 | 9 | get_active/open_documents, switch/open_document, get_document_text, insert_header/footer, generate_toc/doc_toc |
 
-### PPT 专项工具（42个，详见 /wps-ppt Skill）
+### PPT 专项工具（111个，详见 /wps-ppt Skill）
 
 | 分类 | 工具数 | 关键工具 |
 |-----|-------|---------|
-| 基础操作 | 5 | add_slide, beautify, unify_font, set_font_color, align_objects |
-| 文本框操作 | 7 | delete/get_textboxes, set_textbox_text/style, get_slide_title, set_slide_subtitle/content |
-| 幻灯片管理 | 11 | delete/duplicate/move/copy_slide, get_slide_count/info, switch_slide, set_slide_layout/size/notes |
-| 演示文稿管理 | 7 | create/open/close_presentation, get_open_presentations, switch_presentation, set_slide_theme, insert_slide_image |
-| 元素操作 | 10 | add_textbox/shape/chart, insert_image, set_shape_fill/style/text, set_slide_title, set_background, add_speaker_notes |
-| 动画与切换 | 2 | set_animation, set_transition |
+| 幻灯片基础 | 5 | add_slide, beautify, unify_font, set_font_color, align_objects |
+| 幻灯片操作 | 22 | delete/duplicate/move/copy_slide, get_slide_count/info, switch_slide, set_slide_layout/title/content, find/replace_ppt_text 等 |
+| 演示文稿管理 | 8 | create/open/close_presentation, get_open_presentations, switch_presentation, get/set_master 等 |
+| 文本框 | 7 | add/delete_textbox, get_textboxes, set_textbox_text/style, create_3d_text, set_shape_text |
+| 形状基础 | 10 | add/delete_shape, get_shapes, set_shape_position/style/fill/border/shadow/gradient/transparency |
+| 形状高级 | 6 | align/distribute/group_shapes, duplicate_shape, set_shape_z_order, smart_distribute |
+| 图片 | 4 | insert_image, insert/delete_ppt_image, set_image_style |
+| 表格 | 6 | insert_table, get/set_table_cell, set_table_style/cell_style/row_style |
+| 美化高级 | 7 | apply_color_scheme, auto_beautify_slide, beautify_all_slides, add_title_decoration/page_indicator, create_styled_table/kpi_cards |
+| 动画切换 | 9 | add/remove_animation, get_animations, set_animation_order, add_animation_preset/emphasis_animation, set/remove_slide_transition, apply_transition_to_all |
+| 图表流程图 | 5 | insert_ppt_chart, set_ppt_chart_data/style, create_flow/org_chart |
+| 杂项 | 9 | add_chart, set_animation/background/transition, add/remove_ppt_hyperlink, auto_layout, create_grid/timeline |
+| 数据可视化 | 6 | create_progress_bar/gauge/mini_charts/donut_chart, set_background_gradient/image |
+| 背景页脚3D | 7 | set_background_color, set_slide_number, set_ppt_footer/date_time, set_3d_rotation/depth/material |
 
 ### 专项工具路由
 
 | 工具前缀 | 对应 Skill |
 |---------|-----------|
-| `wps_excel_*` | /wps-excel（65个工具） |
+| `wps_excel_*` | /wps-excel（80个工具） |
 | `wps_word_*` | /wps-word（24个工具） |
-| `wps_ppt_*` | /wps-ppt（42个工具） |
+| `wps_ppt_*` | /wps-ppt（111个工具） |
+| `wps_common_*` / `wps_convert_*` | 通用（9个工具） |
 
 ## 使用建议
 
@@ -345,4 +362,4 @@ ELSE:
 
 *Skill by lc2panda - WPS MCP Project*
 
-<!-- 审计记录：2026-03-21 T17 同步工具列表至133个（Excel65+Word24+PPT42+通用2），移除虚拟工具 -->
+<!-- 审计记录：2026-03-21 T18 同步工具列表至224个（Excel80+Word24+PPT111+通用9），与代码100%同步 -->
